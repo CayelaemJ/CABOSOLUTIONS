@@ -114,7 +114,7 @@ function ServiceCard({ service, index }: { service: typeof services[0]; index: n
         pointerEvents: 'none',
       }} />
 
-      {/* Top accent bar on hover */
+      {/* Top accent bar on hover */}
       <div style={{
         position: 'absolute',
         top: 0,

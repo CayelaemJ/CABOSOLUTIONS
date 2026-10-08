@@ -129,7 +129,7 @@ export function Nav() {
         {/* Mobile hamburger */}
         <button
           className="cabo-nav-toggle"
-          onClick={() => setOpen(!open)
+          onClick={() => setOpen(!open)}
           aria-label={open ? 'Close navigation menu' : 'Open navigation menu'}
           aria-expanded={open}
           style={{
