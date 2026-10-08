@@ -45,15 +45,29 @@ export function Contact() {
   const { ref: formRef, visible: formVisible } = useReveal();
   const [form, setForm] = useState({ name: '', email: '', org: '', service: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
+  const [reference, setReference] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = encodeURIComponent(`CABO enquiry from ${form.name}`);
-    const body = encodeURIComponent(
-      `Name: ${form.name}\nEmail: ${form.email}\nOrganisation: ${form.org || 'Not provided'}\nService: ${form.service}\n\n${form.message}`
-    );
-    window.location.href = `mailto:hello@cabosolutions.co.za?subject=${subject}&body=${body}`;
-    setSubmitted(true);
+    setSending(true);
+    setError('');
+    try {
+      const response = await fetch('/api/enquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      const result = await response.json();
+      if (!response.ok || !result.received) throw new Error(result.error || 'Unable to send your enquiry.');
+      setReference(result.reference || '');
+      setSubmitted(true);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Unable to send your enquiry. Please email us directly.');
+    } finally {
+      setSending(false);
+    }
   };
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -286,7 +300,7 @@ export function Contact() {
                     color: 'var(--cabo-warm-white)',
                     marginBottom: '0.75rem',
                   }}>
-                    Message received.
+                    Enquiry saved.
                   </h3>
                   <p style={{
                     fontFamily: 'var(--font-body)',
@@ -294,11 +308,12 @@ export function Contact() {
                     color: 'rgba(245,237,224,0.55)',
                     lineHeight: 1.7,
                   }}>
-                    We'll respond within 24 hours. Looking forward to connecting.
+                    Your enquiry is in our system. We'll be in touch as soon as possible. {reference && `Reference: #${reference}`}
                   </p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit}>
+                  {error && <p role="alert" style={{ color: '#ffb4a2', marginBottom: '1rem', lineHeight: 1.5 }}>{error} <a href="mailto:hello@cabosolutions.co.za" style={{color:'inherit'}}>Email us instead</a>.</p>}
                   <h3 style={{
                     fontFamily: 'var(--font-display)',
                     fontSize: '1.3rem',
@@ -395,6 +410,7 @@ export function Contact() {
 
                   <button
                     type="submit"
+                    disabled={sending}
                     style={{
                       width: '100%',
                       background: 'var(--cabo-clay)',
@@ -418,7 +434,7 @@ export function Contact() {
                       (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
                     }}
                   >
-                    Send Message →
+                    {sending ? 'Sending…' : 'Send Enquiry →'}
                   </button>
                 </form>
               )}
