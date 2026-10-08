@@ -52,197 +52,37 @@ function useReveal() {
 
 function FounderCard({ founder, index }: { founder: typeof founders[0]; index: number }) {
   const { ref, visible } = useReveal();
-  const [hovered, setHovered] = useState(false);
-
+  const shortRole = index === 0 ? 'DATA & TECHNOLOGY' : 'OPERATIONS & GROWTH';
+  const featuredSkills = index === 0
+    ? ['Data Engineering & BI', 'Software Development', 'Automation & Integrations', 'Analytics & AI', 'Data Governance & QA', 'Azure, Fabric & Cloud']
+    : ['Operations & Process', 'Marketing & Social Media', 'PR & Communications', 'Client Success & Delivery', 'Business Development'];
   return (
-    <div
-      ref={ref}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        background: 'var(--cabo-ink)',
-        border: `1px solid ${hovered ? 'rgba(196,103,58,0.35)' : 'rgba(196,103,58,0.15)'}`,
-        borderRadius: '4px',
-        overflow: 'hidden',
-        transform: visible ? 'translateY(0)' : 'translateY(32px)',
-        opacity: visible ? 1 : 0,
-        transition: 'all 0.8s ease, border-color 0.3s',
-        transitionDelay: `${index * 0.2}s`,
-      }}
-    >
-      {/* Clay top bar */}
-      <div style={{
-        height: '4px',
-        background: 'linear-gradient(90deg, var(--cabo-clay), var(--cabo-gold))',
-      }} />
-
-      <div style={{ padding: '2.5rem 2.5rem 3rem' }}>
-        {/* Editorial portrait: colour-graded assets supplied by the founders. */}
-        <div style={{ position: 'relative', aspectRatio: '5 / 4', marginBottom: '1.8rem', overflow: 'hidden', background: '#24201d', borderRadius: '3px' }}>
-          <img
-            src={founder.portrait}
-            alt={`Portrait of ${founder.name} ${founder.surname}, CABO Solutions co-founder`}
-            loading="lazy"
-            style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 30%', filter: 'saturate(0.82) contrast(1.06) sepia(0.08)' }}
-          />
-          <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'linear-gradient(0deg, rgba(13,17,23,0.42), transparent 48%)' }} />
-          <span style={{ position: 'absolute', left: '1rem', bottom: '1rem', color: '#fff', fontFamily: 'var(--font-mono)', fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Co-founder</span>
+    <article ref={ref} className="cabo-founder-card" style={{
+      opacity: visible ? 1 : 0,
+      transform: visible ? 'translateY(0)' : 'translateY(20px)',
+      transition: 'opacity .7s ease, transform .7s ease',
+      transitionDelay: `${index * 120}ms`
+    }}>
+      <div className="cabo-founder-photo">
+        <img src={founder.portrait} alt={`${founder.name} ${founder.surname}, CABO Solutions co-founder`} loading="lazy" />
+        <div className="cabo-founder-photo-shade" aria-hidden="true" />
+      </div>
+      <div className="cabo-founder-info">
+        <span className="cabo-founder-eyebrow">CO-FOUNDER</span>
+        <h3>{founder.name} {founder.surname}</h3>
+        <p className="cabo-founder-role">{shortRole}</p>
+        <span className="cabo-founder-rule" aria-hidden="true" />
+        <p className="cabo-founder-bio">{founder.bio}</p>
+        <div className="cabo-founder-tags" aria-label="Areas of expertise">
+          {featuredSkills.map(skill => <span key={skill}>{skill}</span>)}
         </div>
-        <div style={{ marginBottom: '1.5rem' }}>
-          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.45rem, 3vw, 2rem)', color: 'var(--cabo-warm-white)', lineHeight: 1.2, overflowWrap: 'anywhere' }}>{founder.name} <em style={{ color: 'var(--cabo-sand)' }}>{founder.surname}</em></h3>
-        </div>
-
-        {/* Title */}
-        <div style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '0.6rem',
-          color: 'var(--cabo-gold)',
-          letterSpacing: '0.1em',
-          textTransform: 'uppercase',
-          marginBottom: '0.9rem',
-          lineHeight: 1.65,
-        }}>
-          {founder.title}
-        </div>
-
-        {/* Heritage line */}
-        <div style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '0.6rem',
-          color: 'rgba(245,237,224,0.4)',
-          letterSpacing: '0.1em',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem',
-          marginBottom: '1.5rem',
-        }}>
-          <span style={{
-            width: '5px',
-            height: '5px',
-            borderRadius: '50%',
-            background: 'var(--cabo-clay)',
-            display: 'inline-block',
-            flexShrink: 0,
-          }} />
-          {founder.heritage}
-        </div>
-
-        {/* Divider */}
-        <div style={{
-          height: '1px',
-          background: 'rgba(196,103,58,0.12)',
-          marginBottom: '1.5rem',
-        }} />
-
-        {/* Bio */}
-        <p style={{
-          fontFamily: 'var(--font-body)',
-          fontSize: '0.9rem',
-          color: 'rgba(245,237,224,0.58)',
-          lineHeight: 1.8,
-          marginBottom: '2rem',
-        }}>
-          {founder.bio}
-        </p>
-
-        {/* Skills */}
-        <div style={{ marginBottom: '2rem' }}>
-          <div style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '0.55rem',
-            color: 'rgba(196,103,58,0.45)',
-            letterSpacing: '0.18em',
-            textTransform: 'uppercase',
-            marginBottom: '0.8rem',
-          }}>
-            Core Skills
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
-            {founder.skills.map((skill) => (
-              <span
-                key={skill}
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.57rem',
-                  letterSpacing: '0.07em',
-                  padding: '0.28rem 0.75rem',
-                  background: 'rgba(196,103,58,0.1)',
-                  border: '1px solid rgba(196,103,58,0.22)',
-                  borderRadius: '2px',
-                  color: 'var(--cabo-clay)',
-                }}
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Contact row */}
-        <div style={{
-          borderTop: '1px solid rgba(196,103,58,0.1)',
-          paddingTop: '1.5rem',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.55rem',
-        }}>
-          <a
-            href={`mailto:${founder.email}`}
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.62rem',
-              color: 'rgba(245,237,224,0.45)',
-              textDecoration: 'none',
-              letterSpacing: '0.06em',
-              transition: 'color 0.2s',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--cabo-clay)')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(245,237,224,0.45)')}
-          >
-            ✉ {founder.email}
-          </a>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <a
-              href={`tel:${founder.phone}`}
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.62rem',
-                color: 'rgba(245,237,224,0.45)',
-                textDecoration: 'none',
-                letterSpacing: '0.06em',
-                transition: 'color 0.2s',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--cabo-clay)')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(245,237,224,0.45)')}
-            >
-              ✆ {founder.phone}
-            </a>
-            <a
-              href={founder.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.58rem',
-                color: 'rgba(245,237,224,0.35)',
-                textDecoration: 'none',
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                transition: 'color 0.2s',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--cabo-gold)')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(245,237,224,0.35)')}
-            >
-              <Linkedin size={12} />
-              LinkedIn
-            </a>
-          </div>
+        <div className="cabo-founder-contact">
+          <a href={`mailto:${founder.email}`}>✉ {founder.email}</a>
+          <a href={founder.linkedin} target="_blank" rel="noopener noreferrer"><Linkedin size={14} /> LinkedIn</a>
+          <a href={`tel:${founder.phone}`}>✆ {founder.phone}</a>
         </div>
       </div>
-    </div>
+    </article>
   );
 }
 
@@ -259,6 +99,26 @@ export function Founders() {
         overflow: 'hidden',
       }}
     >
+      <style>{`
+        .cabo-founder-card{display:grid;grid-template-columns:46% minmax(0,1fr);position:relative;isolation:isolate;min-height:470px;background:#141313;border:1px solid rgba(196,103,58,.26);border-radius:15px;overflow:hidden}
+        .cabo-founder-photo{position:relative;min-width:0;overflow:hidden;background:radial-gradient(ellipse at 46% 35%,#92502f 0%,#42271f 42%,#171414 78%)}
+        .cabo-founder-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:center top;filter:saturate(.79) sepia(.12) contrast(1.08) brightness(.91)}
+        .cabo-founder-photo-shade{position:absolute;inset:0;background:linear-gradient(90deg,transparent 65%,#141313 100%),linear-gradient(0deg,#141313 0%,transparent 31%),linear-gradient(180deg,rgba(25,15,11,.12),transparent 40%);pointer-events:none}
+        .cabo-founder-info{position:relative;z-index:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;padding:clamp(1.2rem,2.3vw,2.1rem) clamp(1rem,2.2vw,2rem)}
+        .cabo-founder-eyebrow{font:600 .68rem var(--font-mono);letter-spacing:.2em;color:#cb7954}
+        .cabo-founder-info h3{font-family:var(--font-display);font-size:clamp(1.45rem,2.3vw,2.4rem);font-weight:500;line-height:1.12;color:var(--cabo-warm-white);margin:.6rem 0 .8rem;overflow-wrap:anywhere}
+        .cabo-founder-role{font:500 .67rem var(--font-mono);letter-spacing:.16em;color:#e2cfc2}
+        .cabo-founder-rule{width:36px;height:3px;background:#c46b48;margin:1rem 0}
+        .cabo-founder-bio{font:400 .82rem/1.65 var(--font-body);color:rgba(245,237,224,.72);margin:0 0 1.2rem;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:8;overflow:hidden}
+        .cabo-founder-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.5rem}
+        .cabo-founder-tags span{font:500 .59rem/1.35 var(--font-body);color:#e7c6b2;background:rgba(196,103,58,.1);border:1px solid rgba(196,103,58,.19);border-radius:20px;padding:.4rem .6rem}
+        .cabo-founder-contact{display:flex;flex-direction:column;gap:.5rem;margin-top:auto;max-width:100%}
+        .cabo-founder-contact a{display:flex;align-items:center;gap:.5rem;color:rgba(245,237,224,.74);font:400 .7rem/1.5 var(--font-body);text-decoration:none;overflow-wrap:anywhere}
+        .cabo-founder-contact a:hover{color:#e9a17a}
+        @media(max-width:1100px){.cabo-founder-card{grid-template-columns:1fr;min-height:0}.cabo-founder-photo{height:320px}.cabo-founder-photo-shade{background:linear-gradient(0deg,#141313,transparent 45%)}.cabo-founder-info{padding:1.5rem}.cabo-founder-bio{-webkit-line-clamp:unset;display:block}}
+        @media(max-width:640px){.cabo-founder-photo{height:300px}.cabo-founder-card{border-radius:10px}.cabo-founder-info h3{font-size:1.8rem}}
+        @media(prefers-reduced-motion:reduce){.cabo-founder-card{transition:none!important}}
+      `}</style>
       {/* African kente-inspired top border */}
       <div style={{
         position: 'absolute',
@@ -329,8 +189,8 @@ export function Founders() {
         {/* Cards */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))',
-          gap: '2rem',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 520px), 1fr))',
+          gap: '1.4rem',
         }}>
           {founders.map((f, i) => (
             <FounderCard key={f.name} founder={f} index={i} />
