@@ -19,4 +19,10 @@ export default defineConfig({
 
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
+
+  // Railway's healthcheck reaches Vite Preview with a Railway Host header.
+  // Allow the preview server to accept that host instead of returning HTTP 403.
+  preview: {
+    allowedHosts: true,
+  },
 })
