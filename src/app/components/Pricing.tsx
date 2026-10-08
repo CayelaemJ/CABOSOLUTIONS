@@ -4,33 +4,33 @@ import { Check } from 'lucide-react';
 const plans = [
   {
     name: 'Launch Ready',
-    price: 'R15,000–R25,000',
+    price: 'Scoped quote',
     cadence: '/ project',
-    description: 'A focused engagement to get your first data or strategy deliverable out the door.',
+    description: 'Focused, clearly defined projects. Investment varies with complexity, delivery effort and business requirements.',
     featured: false,
     features: [
-      '1 BI dashboard OR social strategy OR ops audit',
-      '1 round of revisions included',
-      'Full handover documentation',
-      '2-week delivery window',
+      'One small, agreed deliverable',
+      'Revision allowance agreed in writing',
+      'Practical handover notes',
+      'Timeline agreed to fit the selected task',
       'Onboarding call + walkthrough session',
     ],
     cta: 'Get Started',
   },
   {
     name: 'Full Momentum',
-    price: 'R30,000–R45,000',
+    price: 'From R15,000',
     cadence: '/ month',
-    description: 'Our full-service retainer — BI, automation, social, and operations working as one integrated engine.',
+    description: 'A monthly allocation for ongoing reporting, data engineering, application maintenance or workflow improvements.',
     featured: true,
-    badge: 'Most Popular',
+    badge: 'Integrated retainer',
     features: [
-      'BI dashboards + automation workflows',
-      'Social media management + analytics',
+      'Defined monthly hours and deliverables',
+      'Data, BI, software or automation support',
       'Monthly ops check-ins',
-      'Up to 3 active workstreams',
-      'Priority 24hr response',
-      'Quarterly strategy review',
+      'Prioritised delivery backlog',
+      'Support and response times agreed in writing',
+      'Scope and deliverables agreed in writing',
     ],
     cta: 'Start Your Momentum',
   },
@@ -41,12 +41,12 @@ const plans = [
     description: 'Complex, multi-department engagements. We scope it together — no cookie-cutter pricing.',
     featured: false,
     features: [
-      'Full-stack data + comms programme',
+      'Custom SaaS, portals and enterprise data platforms',
       'Team training & capability building',
-      'PR programme & media strategy',
+      'Architecture, integration, testing and security controls',
       'Quarterly reviews & roadmapping',
       'NGO rates available',
-      'Dedicated account lead',
+      'Named technical delivery owner',
     ],
     cta: 'Enquire Now',
   },
@@ -288,7 +288,7 @@ export function Pricing() {
             maxWidth: '520px',
             lineHeight: 1.75,
           }}>
-            All rates are anchored to real delivery experience across banking, manufacturing, FMCG, and non-profit sectors. No hidden fees, no surprise invoices.
+            All rates are anchored to real delivery experience across banking, manufacturing, FMCG, and non-profit sectors. Final pricing, deliverables, timelines and any third-party costs are confirmed in a written Statement of Work before work begins.
           </p>
         </div>
 
@@ -302,6 +302,34 @@ export function Pricing() {
           {plans.map((plan, i) => (
             <PricingCard key={plan.name} plan={plan} index={i} />
           ))}
+        </div>
+
+
+        {/* Selected catalog packages: indicative pricing, not a fixed-price checkout. */}
+        <div style={{ marginTop: '4rem' }}>
+          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.5rem, 3vw, 2.2rem)', color: 'var(--cabo-warm-white)', marginBottom: '0.8rem' }}>Indicative investment by service</h3>
+          <p style={{ color: 'rgba(245,237,224,0.65)', lineHeight: 1.7, maxWidth: '740px', marginBottom: '1.5rem' }}>These are indicative planning ranges, informed by publicly listed South African consulting prices. They are not fixed-price offers or a promise to beat every competitor quote. We tailor each quotation to scope, effort and technical complexity. They are separate from the engagement tiers above. Your final proposal will confirm scope, timeline, licensing costs and investment in writing.</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1rem' }}>
+            {[
+              ['Technical Consulting', 'Discovery and solution scoping', 'R3,500–R7,000', 'Scope confirmed in quote'],
+              ['SQL & Data', 'Query optimisation or data cleanup', 'R6,000–R18,000', 'Scope confirmed in quote'],
+              ['Business Intelligence', 'Power BI dashboard development', 'R15,000–R35,000', 'Scope confirmed in quote'],
+              ['Automation', 'Workflow design and implementation', 'R8,000–R30,000', 'Scope confirmed in quote'],
+              ['Web Development', 'Business website development', 'R13,000–R45,000', 'Scope confirmed in quote'],
+              ['APIs & Integration', 'API and data integration', 'R15,000–R50,000', 'Scope confirmed in quote'],
+              ['Advanced Analytics', 'Analytics and forecasting', 'R25,000–R75,000', 'Scope confirmed in quote'],
+              ['Software Engineering', 'Custom business applications', 'R65,000–R200,000+', 'Scope confirmed in quote'],
+            ].map(([discipline, packageName, price, timeline]) => (
+              <div key={packageName} style={{ padding: '1.4rem', border: '1px solid rgba(196,103,58,0.22)', background: 'var(--cabo-ink)', borderRadius: '4px', minWidth: 0 }}>
+                <div style={{ color: 'var(--cabo-clay)', fontSize: '0.7rem', letterSpacing: '0.05em', marginBottom: '0.6rem' }}>{discipline}</div>
+                <h4 style={{ color: 'var(--cabo-warm-white)', fontSize: '1.05rem', marginBottom: '0.8rem' }}>{packageName}</h4>
+                <div style={{ color: 'var(--cabo-warm-white)', fontWeight: 700, fontSize: '1.3rem' }}>{price}</div>
+                <p style={{ color: 'rgba(245,237,224,0.6)', marginTop: '0.5rem', fontSize: '0.8rem' }}>Delivery: {timeline}</p>
+                <a href="#contact" style={{ display: 'inline-block', marginTop: '1rem', color: 'var(--cabo-clay)', fontSize: '0.85rem' }}>Request a tailored quote →</a>
+              </div>
+            ))}
+          </div>
+          <p style={{ color: 'rgba(245,237,224,0.55)', fontSize: '0.8rem', lineHeight: 1.7, marginTop: '1.25rem' }}>Indicative ranges in South African rand (ZAR), not binding offers. Final quotes depend on requirements, data readiness, number of systems, complexity, delivery urgency, testing, revisions and support. Third-party licences and expenses are itemised where applicable. Changes beyond the agreed scope are separately quoted and approved before work begins. Enterprise SaaS and large-scale platforms are custom quoted. We aim for competitive value against comparable South African specialist consultancies, not the lowest possible price. For pricing context, see published provider rates at trinityandbennettconsulting.co.za/rates, bidashboards.co.za/pricing and randcore.co.za/services.</p>
         </div>
 
         {/* NGO note */}
@@ -334,7 +362,7 @@ export function Pricing() {
               color: 'rgba(245,237,224,0.6)',
               lineHeight: 1.6,
             }}>
-              Registered NPOs and social enterprises get access to the same quality at significantly reduced rates. We believe data-driven social impact shouldn't be a luxury.
+              Registered non-profits and social enterprises may qualify for 30–40% reduced package rates, subject to confirmation. We believe data-driven social impact shouldn't be a luxury.
             </p>
           </div>
           <a

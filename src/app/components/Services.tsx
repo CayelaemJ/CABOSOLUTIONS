@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Database, Zap, BarChart3, Megaphone, Settings, Radio } from 'lucide-react';
+import { Database, Zap, BarChart3, Megaphone, Settings, Radio, Code2, ShieldCheck, GraduationCap } from 'lucide-react';
 
 const services = [
   {
@@ -13,7 +13,7 @@ const services = [
     num: '02',
     icon: Zap,
     title: 'Automation & Workflows',
-    description: 'We eliminate repetitive manual work by building smart automation flows that save your team hours every day — from approvals to reporting.',
+    description: 'We build Power Automate and API-connected workflows for email processing, document handling, approvals, stock alerts and scheduled reporting.',
     tags: ['Power Automate', 'Zapier', 'Make'],
   },
   {
@@ -44,6 +44,9 @@ const services = [
     description: 'We train teams to communicate with confidence and craft PR strategies that build brand credibility — from press releases to crisis comms.',
     tags: ['PR Strategy', 'Training', 'Messaging', 'Media'],
   },
+  { num: '07', icon: Code2, title: 'Software & App Development', description: 'React and Node.js applications, REST APIs, PostgreSQL integrations, authenticated portals, role-based access and multi-tenant SaaS foundations, scoped to operational needs.', tags: ['React', 'TypeScript', 'Node.js', 'PostgreSQL', 'RBAC', 'SaaS'] },
+  { num: '08', icon: ShieldCheck, title: 'Data Governance & Compliance', description: 'POPIA readiness assessments, data flow mapping, policy documentation and practical remediation support. Legal compliance is not guaranteed.', tags: ['POPIA', 'Data Mapping', 'Risk Assessment', 'Governance'] },
+  { num: '09', icon: GraduationCap, title: 'Training & Enablement', description: 'Documentation, live training sessions and team enablement so clients can confidently operate their delivered systems.', tags: ['Documentation', 'Workshops', 'Handover'] },
 ];
 
 function useReveal() {
@@ -246,7 +249,7 @@ export function Services() {
             lineHeight: 1.15,
             marginBottom: '1rem',
           }}>
-            Six disciplines.{' '}
+            Nine disciplines.{' '}
             <em style={{ color: 'var(--cabo-clay)', fontStyle: 'italic' }}>One studio.</em>
           </h2>
           <p style={{
@@ -256,7 +259,7 @@ export function Services() {
             maxWidth: '560px',
             lineHeight: 1.75,
           }}>
-            We work across data, operations, marketing, and communications — so any business, at any stage, gets one integrated partner instead of six separate consultants.
+            We work across data, operations, marketing, and communications — so any business, at any stage, gets one integrated partner across nine complementary disciplines.
           </p>
         </div>
 
