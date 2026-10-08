@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 
 type Profile = { name: string; role: string; email: string; phone: string; linkedin: string; photo: string; slug: string; summary: string };
 const profiles: Record<string, Profile> = {
-  cayelaem: { slug: 'cayelaem', name: 'Cayelaem Jantjies', role: 'Co-Founder · Data & Technology', email: 'cayelaem@cabosolutions.co.za', phone: '+27 64 500 7574', linkedin: 'https://www.linkedin.com/in/cayelaem-jantjies-000b45144/', photo: '/images/founders/cayelaem.jpg', summary: 'Data engineering, business intelligence, software development and automation.' },
-  bokamoso: { slug: 'bokamoso', name: 'Bokamoso Molefi', role: 'Co-Founder · Operations & Growth', email: 'bokamoso@cabosolutions.co.za', phone: '+27 74 787 7904', linkedin: 'https://www.linkedin.com/in/bokamoso-molefi-4a1b89239/', photo: '/images/founders/bokamoso.jpg', summary: 'Operations, marketing strategy, communications and business development.' },
+  cayelaem: { slug: 'cayelaem', name: 'Cayelaem Jantjies', role: 'Co-Founder · Data & Technology', email: 'cayelaem@cabosolutionsza.cloud-ip.cc', phone: '+27 64 500 7574', linkedin: 'https://www.linkedin.com/in/cayelaem-jantjies-000b45144/', photo: '/images/founders/cayelaem.jpg', summary: 'Data engineering, business intelligence, software development and automation.' },
+  bokamoso: { slug: 'bokamoso', name: 'Bokamoso Molefi', role: 'Co-Founder · Operations & Growth', email: 'bokamoso.molefi@cabosolutionsza.cloud-ip.cc', phone: '+27 74 787 7904', linkedin: 'https://www.linkedin.com/in/bokamoso-molefi-4a1b89239/', photo: '/images/founders/bokamoso.jpg', summary: 'Operations, marketing strategy, communications and business development.' },
 };
 const escapeVCard = (value: string) => value.replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
 export function NfcProfile({ slug }: { slug: string }) {
