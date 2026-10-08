@@ -4,31 +4,31 @@ import { Check } from 'lucide-react';
 const plans = [
   {
     name: 'Launch Ready',
-    price: 'From R12,000',
+    price: 'From R3,500',
     cadence: '/ project',
-    description: 'A focused engagement to get your first data or strategy deliverable out the door.',
+    description: 'A narrowly scoped first improvement, such as a simple automation, data fix or reporting enhancement.',
     featured: false,
     features: [
-      '1 BI dashboard OR social strategy OR ops audit',
+      'One small, agreed deliverable',
       '1 round of revisions included',
-      'Full handover documentation',
-      'Typical 2–3 week delivery, subject to scope',
+      'Practical handover notes',
+      'Timeline agreed to fit the selected task',
       'Onboarding call + walkthrough session',
     ],
     cta: 'Get Started',
   },
   {
     name: 'Full Momentum',
-    price: 'From R28,000',
+    price: 'From R12,000',
     cadence: '/ month',
-    description: 'Our full-service retainer — BI, automation, social, and operations working as one integrated engine.',
+    description: 'A monthly allocation for ongoing reporting, data engineering, application maintenance or workflow improvements.',
     featured: true,
     badge: 'Integrated retainer',
     features: [
-      'BI dashboards + automation workflows',
-      'Social media management + analytics',
+      'Monthly work allocation agreed in advance',
+      'Data, BI, software or automation support',
       'Monthly ops check-ins',
-      'Up to 3 active workstreams',
+      'Prioritised delivery backlog',
       'Weekly delivery cadence',
       'Scope and deliverables agreed in writing',
     ],
@@ -41,12 +41,12 @@ const plans = [
     description: 'Complex, multi-department engagements. We scope it together — no cookie-cutter pricing.',
     featured: false,
     features: [
-      'Full-stack data + comms programme',
+      'Custom SaaS, portals and enterprise data platforms',
       'Team training & capability building',
-      'PR programme & media strategy',
+      'Architecture, integration, testing and security controls',
       'Quarterly reviews & roadmapping',
       'NGO rates available',
-      'Dedicated account lead',
+      'Named technical delivery owner',
     ],
     cta: 'Enquire Now',
   },
@@ -308,29 +308,28 @@ export function Pricing() {
         {/* Selected catalog packages: indicative pricing, not a fixed-price checkout. */}
         <div style={{ marginTop: '4rem' }}>
           <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.5rem, 3vw, 2.2rem)', color: 'var(--cabo-warm-white)', marginBottom: '0.8rem' }}>Explore starting prices by service</h3>
-          <p style={{ color: 'rgba(245,237,224,0.65)', lineHeight: 1.7, maxWidth: '740px', marginBottom: '1.5rem' }}>These are selected packages from our September 2026 pricing catalog. They are separate from the engagement tiers above. Your final proposal will confirm scope, timeline, licensing costs and investment in writing.</p>
+          <p style={{ color: 'rgba(245,237,224,0.65)', lineHeight: 1.7, maxWidth: '740px', marginBottom: '1.5rem' }}>These are proposed introductory small-scope packages, distinct from our September 2026 catalog's larger project packages. They are separate from the engagement tiers above. Your final proposal will confirm scope, timeline, licensing costs and investment in writing.</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1rem' }}>
             {[
-              ['Data Engineering & BI', 'Starter Dashboard', 'From R15,000', '2–3 weeks'],
-              ['Automation & Workflows', 'Single Flow Build', 'From R8,000', '1–2 weeks'],
-              ['Analytics & Data Science', 'Diagnostic Analytics Report', 'From R18,000', '2–4 weeks'],
-              ['Marketing & Social Media', 'Launch Strategy', 'From R12,000', '2–3 weeks'],
-              ['Operations & Business Improvement', 'Single-Process Audit', 'From R15,000', '2–3 weeks'],
-              ['PR Training & Communications', 'Comms Training Workshop', 'From R8,000', '1–2 weeks'],
-              ['Software & App Development', 'Internal Tool / MVP', 'From R60,000', '6–8 weeks'],
-              ['Data Governance & Compliance', 'POPIA Readiness Audit', 'From R15,000', '2–3 weeks'],
-              ['Training & Enablement', 'Enablement Add-On', 'From R6,000', '1 week'],
+              ['Data & BI', 'Dashboard improvement', 'From R2,500', 'Scoped after discovery'],
+              ['SQL & Data', 'Query optimisation or data cleanup', 'From R3,000', 'Scoped after discovery'],
+              ['Automation', 'Basic workflow', 'From R3,500', 'Scoped after discovery'],
+              ['Business Intelligence', 'Starter Power BI dashboard', 'From R5,000', 'Scoped after discovery'],
+              ['Web Development', 'Landing page or simple website', 'From R6,000', 'Scoped after discovery'],
+              ['APIs & Integration', 'Data integration or API setup', 'From R7,500', 'Scoped after discovery'],
+              ['Software Engineering', 'Custom internal business application', 'From R15,000', 'Scoped after discovery'],
+              ['Advanced Analytics', 'Forecasting or analytics starter', 'From R8,000', 'Scoped after discovery'],
             ].map(([discipline, packageName, price, timeline]) => (
               <div key={packageName} style={{ padding: '1.4rem', border: '1px solid rgba(196,103,58,0.22)', background: 'var(--cabo-ink)', borderRadius: '4px', minWidth: 0 }}>
                 <div style={{ color: 'var(--cabo-clay)', fontSize: '0.7rem', letterSpacing: '0.05em', marginBottom: '0.6rem' }}>{discipline}</div>
                 <h4 style={{ color: 'var(--cabo-warm-white)', fontSize: '1.05rem', marginBottom: '0.8rem' }}>{packageName}</h4>
                 <div style={{ color: 'var(--cabo-warm-white)', fontWeight: 700, fontSize: '1.3rem' }}>{price}</div>
-                <p style={{ color: 'rgba(245,237,224,0.6)', marginTop: '0.5rem', fontSize: '0.8rem' }}>Typical timeline: {timeline}</p>
+                <p style={{ color: 'rgba(245,237,224,0.6)', marginTop: '0.5rem', fontSize: '0.8rem' }}>Delivery: {timeline}</p>
                 <a href="#contact" style={{ display: 'inline-block', marginTop: '1rem', color: 'var(--cabo-clay)', fontSize: '0.85rem' }}>Request a tailored quote →</a>
               </div>
             ))}
           </div>
-          <p style={{ color: 'rgba(245,237,224,0.55)', fontSize: '0.8rem', lineHeight: 1.7, marginTop: '1.25rem' }}>Indicative prices in South African rand (ZAR), subject to scope and written confirmation. Third-party licences and expenses are quoted separately where applicable. The Enablement Add-On is bundled with a build, rather than sold as a standalone project.</p>
+          <p style={{ color: 'rgba(245,237,224,0.55)', fontSize: '0.8rem', lineHeight: 1.7, marginTop: '1.25rem' }}>Proposed introductory prices in South African rand (ZAR), subject to scope and written confirmation. Third-party licences and expenses are quoted separately where applicable. The Enablement Add-On is bundled with a build, rather than sold as a standalone project.</p>
         </div>
 
         {/* NGO note */}
