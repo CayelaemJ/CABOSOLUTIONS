@@ -4,7 +4,7 @@ import { Check } from 'lucide-react';
 const plans = [
   {
     name: 'Launch Ready',
-    price: 'R15,000–R25,000',
+    price: 'From R12,000',
     cadence: '/ project',
     description: 'A focused engagement to get your first data or strategy deliverable out the door.',
     featured: false,
@@ -12,25 +12,25 @@ const plans = [
       '1 BI dashboard OR social strategy OR ops audit',
       '1 round of revisions included',
       'Full handover documentation',
-      '2-week delivery window',
+      'Typical 2–3 week delivery, subject to scope',
       'Onboarding call + walkthrough session',
     ],
     cta: 'Get Started',
   },
   {
     name: 'Full Momentum',
-    price: 'R30,000–R45,000',
+    price: 'From R28,000',
     cadence: '/ month',
     description: 'Our full-service retainer — BI, automation, social, and operations working as one integrated engine.',
     featured: true,
-    badge: 'Most Popular',
+    badge: 'Integrated retainer',
     features: [
       'BI dashboards + automation workflows',
       'Social media management + analytics',
       'Monthly ops check-ins',
       'Up to 3 active workstreams',
-      'Priority 24hr response',
-      'Quarterly strategy review',
+      'Weekly delivery cadence',
+      'Scope and deliverables agreed in writing',
     ],
     cta: 'Start Your Momentum',
   },
@@ -288,7 +288,7 @@ export function Pricing() {
             maxWidth: '520px',
             lineHeight: 1.75,
           }}>
-            All rates are anchored to real delivery experience across banking, manufacturing, FMCG, and non-profit sectors. No hidden fees, no surprise invoices.
+            All rates are anchored to real delivery experience across banking, manufacturing, FMCG, and non-profit sectors. Final pricing, deliverables, timelines and any third-party costs are confirmed in a written Statement of Work before work begins.
           </p>
         </div>
 
@@ -334,7 +334,7 @@ export function Pricing() {
               color: 'rgba(245,237,224,0.6)',
               lineHeight: 1.6,
             }}>
-              Registered NPOs and social enterprises get access to the same quality at significantly reduced rates. We believe data-driven social impact shouldn't be a luxury.
+              Registered non-profits and social enterprises may qualify for 30–40% reduced package rates, subject to confirmation. We believe data-driven social impact shouldn't be a luxury.
             </p>
           </div>
           <a
