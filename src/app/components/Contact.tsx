@@ -45,15 +45,39 @@ export function Contact() {
   const { ref: formRef, visible: formVisible } = useReveal();
   const [form, setForm] = useState({ name: '', email: '', org: '', service: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [website, setWebsite] = useState(''); // Honeypot: genuine visitors leave this blank.
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const subject = encodeURIComponent(`CABO enquiry from ${form.name}`);
-    const body = encodeURIComponent(
-      `Name: ${form.name}\nEmail: ${form.email}\nOrganisation: ${form.org || 'Not provided'}\nService: ${form.service}\n\n${form.message}`
-    );
-    window.location.href = `mailto:hello@cabosolutions.co.za?subject=${subject}&body=${body}`;
-    setSubmitted(true);
+    if (sending || website) return;
+    setSending(true);
+    setSubmitError('');
+    try {
+      const response = await fetch('https://formsubmit.co/ajax/hello@cabosolutions.co.za', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          email: form.email.trim(),
+          organisation: form.org.trim() || 'Not provided',
+          service: form.service,
+          message: form.message.trim(),
+          _subject: `CABO website enquiry — ${form.service}`,
+          _honey: website,
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok || result.success === false || result.success === 'false') {
+        throw new Error('Submission was not accepted.');
+      }
+      setSubmitted(true);
+    } catch {
+      setSubmitError('Your message could not be sent. Please try again, or email hello@cabosolutions.co.za directly.');
+    } finally {
+      setSending(false);
+    }
   };
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -294,11 +318,15 @@ export function Contact() {
                     color: 'rgba(245,237,224,0.55)',
                     lineHeight: 1.7,
                   }}>
-                    We'll respond within 24 hours. Looking forward to connecting.
+                    Thanks for reaching out. Your enquiry has been submitted. We'll get back to you as soon as possible.
                   </p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit}>
+                  <div aria-hidden="true" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', left: '-9999px' }}>
+                    <label htmlFor="cabo-website">Website</label>
+                    <input id="cabo-website" name="_honey" type="text" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
+                  </div>
                   <h3 style={{
                     fontFamily: 'var(--font-display)',
                     fontSize: '1.3rem',
@@ -329,6 +357,8 @@ export function Contact() {
                       </label>
                       <input
                         type={field.type}
+                        name={field.id}
+                        maxLength={field.id === "email" ? 254 : 150}
                         placeholder={field.placeholder}
                         required={field.required}
                         value={form[field.id as keyof typeof form]}
@@ -355,6 +385,7 @@ export function Contact() {
                     </label>
                     <select
                       required
+                      name="service"
                       value={form.service}
                       onChange={(e) => setForm({ ...form, service: e.target.value })}
                       onFocus={handleFocus}
@@ -384,6 +415,9 @@ export function Contact() {
                     <textarea
                       required
                       rows={4}
+                      name="message"
+                      minLength={10}
+                      maxLength={5000}
                       placeholder="Tell us about your project, challenge, or goals..."
                       value={form.message}
                       onChange={(e) => setForm({ ...form, message: e.target.value })}
@@ -393,8 +427,11 @@ export function Contact() {
                     />
                   </div>
 
+                  {submitError && <p role="alert" style={{ color: '#ffb4a2', fontSize: '0.85rem', marginBottom: '1rem', lineHeight: 1.6 }}>{submitError}</p>}
                   <button
                     type="submit"
+                    disabled={sending}
+                    aria-busy={sending}
                     style={{
                       width: '100%',
                       background: 'var(--cabo-clay)',
@@ -418,7 +455,7 @@ export function Contact() {
                       (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
                     }}
                   >
-                    Send Message →
+                    {sending ? "Sending…" : "Send Message →"}
                   </button>
                 </form>
               )}
