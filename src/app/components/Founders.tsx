@@ -101,8 +101,8 @@ export function Founders() {
     >
       <style>{`
         .cabo-founder-card{display:grid;grid-template-columns:46% minmax(0,1fr);position:relative;isolation:isolate;min-height:470px;background:#141313;border:1px solid rgba(196,103,58,.26);border-radius:15px;overflow:hidden}
-        .cabo-founder-photo{position:relative;min-width:0;overflow:hidden;background:radial-gradient(ellipse at 46% 35%,#92502f 0%,#42271f 42%,#171414 78%)}
-        .cabo-founder-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:center top;filter:grayscale(.28) sepia(.48) saturate(.82) contrast(1.22) brightness(.73)}
+        .cabo-founder-photo{position:relative;min-width:0;overflow:hidden;background:radial-gradient(ellipse at 48% 35%,#bc7049 0%,#764329 38%,#241a18 78%)}
+        .cabo-founder-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:center top;mix-blend-mode:multiply;filter:sepia(.26) saturate(.92) contrast(1.13) brightness(1.16)}
         .cabo-founder-photo-shade{position:absolute;inset:0;background:radial-gradient(ellipse at 52% 33%,rgba(204,112,62,.10) 0%,rgba(59,28,20,.38) 49%,rgba(16,15,15,.8) 95%),linear-gradient(90deg,rgba(30,16,13,.15) 0%,rgba(20,19,19,.85) 100%),linear-gradient(0deg,#141313 0%,rgba(20,19,19,.45) 24%,transparent 53%);pointer-events:none}
         .cabo-founder-info{position:relative;z-index:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;padding:clamp(1.2rem,2.3vw,2.1rem) clamp(1rem,2.2vw,2rem)}
         .cabo-founder-eyebrow{font:600 .68rem var(--font-mono);letter-spacing:.2em;color:#cb7954}
