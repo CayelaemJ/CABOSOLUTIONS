@@ -11,7 +11,7 @@ import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
 
 export default function App() {
-  const path = window.location.pathname.replace(/\\/$/, '').toLowerCase();
+  const path = window.location.pathname.replace(/\/$/, '').toLowerCase();
   if (path.startsWith('/nfc/')) return <NfcProfile slug={path.split('/')[2] || ''} />;
   return (
     <div style={{ minHeight: '100vh', background: 'var(--cabo-bg)' }}>
