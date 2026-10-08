@@ -67,13 +67,23 @@ function useReveal() {
 function ServiceCard({ service, index }: { service: typeof services[0]; index: number }) {
   const { ref, visible } = useReveal();
   const [hovered, setHovered] = useState(false);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const Icon = service.icon;
 
   return (
     <div
       ref={ref}
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseLeave={() => {
+        setHovered(false);
+        setTilt({ x: 0, y: 0 });
+      }}
+      onMouseMove={(event) => {
+        const rect = event.currentTarget.getBoundingClientRect();
+        const x = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+        const y = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+        setTilt({ x: y, y: x });
+      }}
       style={{
         background: hovered ? 'rgba(196,103,58,0.06)' : 'var(--cabo-ink)',
         border: `1px solid ${hovered ? 'rgba(196,103,58,0.4)' : 'rgba(196,103,58,0.15)'}`,
@@ -83,13 +93,28 @@ function ServiceCard({ service, index }: { service: typeof services[0]; index: n
         overflow: 'hidden',
         cursor: 'default',
         transition: 'all 0.35s ease',
-        transform: visible ? 'translateY(0)' : 'translateY(28px)',
+        transform: visible ? `perspective(900px) translateY(0) rotateX(${hovered ? -tilt.x * 3 : 0}deg) rotateY(${hovered ? tilt.y * 4 : 0}deg) translateZ(${hovered ? 8 : 0}px)` : 'translateY(28px)',
         opacity: visible ? 1 : 0,
         transitionDelay: `${index * 0.08}s`,
         boxShadow: hovered ? '0 0 40px rgba(196,103,58,0.08)' : 'none',
       }}
     >
-      {/* Top accent bar on hover */}
+      {/* Depth glow */}
+      <div style={{
+        position: 'absolute',
+        width: '180px',
+        height: '180px',
+        borderRadius: '50%',
+        right: '-70px',
+        top: '-70px',
+        background: 'radial-gradient(circle, rgba(196,103,58,0.13) 0%, rgba(196,103,58,0) 70%)',
+        opacity: hovered ? 1 : 0,
+        transform: hovered ? 'scale(1.15)' : 'scale(0.8)',
+        transition: 'opacity 0.35s, transform 0.5s',
+        pointerEvents: 'none',
+      }} />
+
+      {/* Top accent bar on hover */
       <div style={{
         position: 'absolute',
         top: 0,
