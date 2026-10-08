@@ -6,7 +6,8 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite --host 0.0.0.0",
-    "start": "vite preview --host 0.0.0.0 --port $PORT"
+    "start": "node server.mjs",
+    "check": "node --check server.mjs"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
@@ -64,7 +65,8 @@
     "tailwind-merge": "3.2.0",
     "tw-animate-css": "1.3.8",
     "vaul": "1.1.2",
-    "three": "^0.180.0"
+    "three": "^0.180.0",
+    "pg": "^8.16.3"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.1.12",
