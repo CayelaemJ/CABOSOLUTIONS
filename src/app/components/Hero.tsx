@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { CaboDataUniverse } from './CaboDataUniverse';
 
 function StarField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -57,218 +58,6 @@ function StarField() {
         pointerEvents: 'none',
       }}
     />
-  );
-}
-
-/* African geometric mandala — inspired by Ndebele beadwork and Kente weave rhythm */
-function AfricanMandala() {
-  const rings = [200, 170, 138, 104, 72];
-  const centre = 210;
-
-  // Ndebele-inspired diamond points around the outer rings
-  const outerPoints = Array.from({ length: 24 }, (_, i) => {
-    const angle = (i * 15 - 90) * Math.PI / 180;
-    return {
-      x: centre + rings[0] * Math.cos(angle),
-      y: centre + rings[0] * Math.sin(angle),
-      major: i % 6 === 0,
-      accent: i % 3 === 0,
-    };
-  });
-
-  // Kente-inspired segmented arcs on second ring
-  const kente = Array.from({ length: 12 }, (_, i) => {
-    const startAngle = (i * 30 - 90) * Math.PI / 180;
-    const endAngle = ((i * 30 + 22) - 90) * Math.PI / 180;
-    const r = rings[1];
-    return {
-      x1: centre + r * Math.cos(startAngle),
-      y1: centre + r * Math.sin(startAngle),
-      x2: centre + r * Math.cos(endAngle),
-      y2: centre + r * Math.sin(endAngle),
-      startAngle,
-      endAngle,
-      color: i % 3 === 0 ? '#C4673A' : i % 3 === 1 ? '#C9A84C' : '#1D6B6B',
-      opacity: 0.5,
-    };
-  });
-
-  return (
-    <div style={{
-      position: 'relative',
-      width: '420px',
-      height: '420px',
-      flexShrink: 0,
-    }}>
-      <style>{`
-        @keyframes mandala-outer { to { transform: rotate(360deg); } }
-        @keyframes mandala-inner { to { transform: rotate(-360deg); } }
-        @keyframes mandala-mid { to { transform: rotate(180deg); } }
-        @keyframes pulse-centre {
-          0%,100% { opacity: 0.9; transform: scale(1); }
-          50% { opacity: 0.7; transform: scale(0.97); }
-        }
-      `}</style>
-
-      {/* Outermost slow ring */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        animation: 'mandala-outer 80s linear infinite',
-        transformOrigin: 'center',
-      }}>
-        <svg viewBox="0 0 420 420" style={{ width: '100%', height: '100%' }}>
-          {/* Outer ring */}
-          <circle cx={centre} cy={centre} r={rings[0]} fill="none" stroke="#C4673A" strokeWidth="1" strokeOpacity="0.22" />
-
-          {/* Ndebele diamond points */}
-          {outerPoints.map((p, i) => (
-            <g key={i}>
-              {p.major ? (
-                /* Large diamond at cardinal points */
-                <polygon
-                  points={`
-                    ${p.x},${p.y - 7}
-                    ${p.x + 4},${p.y}
-                    ${p.x},${p.y + 7}
-                    ${p.x - 4},${p.y}
-                  `}
-                  fill={i % 12 === 0 ? '#C4673A' : '#C9A84C'}
-                  fillOpacity={i % 12 === 0 ? 0.7 : 0.45}
-                />
-              ) : p.accent ? (
-                /* Medium marks */
-                <rect
-                  x={p.x - 2}
-                  y={p.y - 2}
-                  width="4"
-                  height="4"
-                  fill="#C9A84C"
-                  fillOpacity="0.3"
-                  transform={`rotate(45, ${p.x}, ${p.y})`}
-                />
-              ) : (
-                /* Small tick */
-                <circle cx={p.x} cy={p.y} r="1.2" fill="#C9A84C" fillOpacity="0.18" />
-              )}
-            </g>
-          ))}
-
-          {/* Dash ring just inside */}
-          <circle cx={centre} cy={centre} r={rings[0] - 12} fill="none"
-            stroke="#C4673A" strokeWidth="0.5" strokeOpacity="0.12"
-            strokeDasharray="3 9" />
-        </svg>
-      </div>
-
-      {/* Kente-inspired segmented arcs — counter-rotate */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        animation: 'mandala-inner 60s linear infinite',
-        transformOrigin: 'center',
-      }}>
-        <svg viewBox="0 0 420 420" style={{ width: '100%', height: '100%' }}>
-          {kente.map((seg, i) => (
-            <path
-              key={i}
-              d={`M ${centre + rings[1] * Math.cos(seg.startAngle)} ${centre + rings[1] * Math.sin(seg.startAngle)}
-                  A ${rings[1]} ${rings[1]} 0 0 1 ${centre + rings[1] * Math.cos(seg.endAngle)} ${centre + rings[1] * Math.sin(seg.endAngle)}`}
-              fill="none"
-              stroke={seg.color}
-              strokeWidth="4"
-              strokeOpacity={seg.opacity}
-              strokeLinecap="round"
-            />
-          ))}
-          {/* Solid ring under kente */}
-          <circle cx={centre} cy={centre} r={rings[1]} fill="none"
-            stroke="rgba(196,103,58,0.1)" strokeWidth="12" />
-        </svg>
-      </div>
-
-      {/* Inner geometric ring — slow clockwise */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        animation: 'mandala-mid 120s linear infinite',
-        transformOrigin: 'center',
-      }}>
-        <svg viewBox="0 0 420 420" style={{ width: '100%', height: '100%' }}>
-          {/* Beadwork-style dotted ring */}
-          {Array.from({ length: 32 }, (_, i) => {
-            const angle = (i * 360 / 32 - 90) * Math.PI / 180;
-            const x = centre + rings[2] * Math.cos(angle);
-            const y = centre + rings[2] * Math.sin(angle);
-            return (
-              <circle key={i} cx={x} cy={y} r={i % 4 === 0 ? 3 : 1.5}
-                fill={i % 4 === 0 ? '#C4673A' : '#C9A84C'}
-                fillOpacity={i % 4 === 0 ? 0.55 : 0.25} />
-            );
-          })}
-
-          {/* Thin structural ring */}
-          <circle cx={centre} cy={centre} r={rings[3]} fill="none"
-            stroke="#1D6B6B" strokeWidth="0.75" strokeOpacity="0.3"
-            strokeDasharray="5 5" />
-
-          {/* Cross / plus marks at 8 compass points */}
-          {Array.from({ length: 8 }, (_, i) => {
-            const angle = (i * 45 - 90) * Math.PI / 180;
-            const x = centre + rings[3] * Math.cos(angle);
-            const y = centre + rings[3] * Math.sin(angle);
-            return (
-              <g key={i} transform={`translate(${x},${y}) rotate(${i * 45})`}>
-                <line x1="-4" y1="0" x2="4" y2="0" stroke="#C9A84C" strokeWidth="0.8" strokeOpacity="0.5" />
-                <line x1="0" y1="-4" x2="0" y2="4" stroke="#C9A84C" strokeWidth="0.8" strokeOpacity="0.5" />
-              </g>
-            );
-          })}
-        </svg>
-      </div>
-
-      {/* Centre mark — static */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-        <div style={{
-          textAlign: 'center',
-          animation: 'pulse-centre 5s ease-in-out infinite',
-        }}>
-          <div style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '2rem',
-            fontWeight: 900,
-            color: 'var(--cabo-clay)',
-            letterSpacing: '0.1em',
-            lineHeight: 1,
-          }}>
-            CABO
-          </div>
-          <div style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '0.45rem',
-            color: 'rgba(201,168,76,0.6)',
-            letterSpacing: '0.3em',
-            textTransform: 'uppercase',
-            marginTop: '0.2rem',
-          }}>
-            Solutions
-          </div>
-          <div style={{
-            width: '30px',
-            height: '1px',
-            background: 'var(--cabo-clay)',
-            margin: '0.4rem auto 0',
-            opacity: 0.5,
-          }} />
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -366,7 +155,7 @@ export function Hero() {
             lineHeight: 1.75,
             marginBottom: '2.5rem',
           }}>
-            CABO Solutions is a full-service data intelligence and business growth studio — built for Africa's next chapter, open to every kind of business, every sector, every stage of growth.
+            CABO Solutions is a full-service data intelligence and business growth studio built for Africa's next chapter, open to every kind of business, every sector, every stage of growth.
           </p>
 
           {/* CTAs */}
@@ -468,9 +257,9 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Right — African mandala */}
-        <div className="hidden lg:flex" style={{ alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <AfricanMandala />
+        {/* Right — interactive CABO data universe */}
+        <div className="cabo-hero-universe-wrap">
+          <CaboDataUniverse />
         </div>
       </div>
 
