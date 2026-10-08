@@ -22,6 +22,7 @@ export function Nav() {
   return (
     <>
       <nav
+        className="cabo-nav"
         style={{
           position: 'fixed',
           top: 0,
@@ -66,15 +67,14 @@ export function Nav() {
 
         {/* Desktop links */}
         <ul
+          className="cabo-nav-links"
           style={{
-            display: 'flex',
             gap: '2.5rem',
             listStyle: 'none',
             margin: 0,
             padding: 0,
             alignItems: 'center',
           }}
-          className="hidden md:flex"
         >
           {links.map((l) => (
             <li key={l.href}>
@@ -128,8 +128,8 @@ export function Nav() {
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden"
-          onClick={() => setOpen(!open)}
+          className="cabo-nav-toggle"
+          onClick={() => setOpen(!open)
           aria-label={open ? 'Close navigation menu' : 'Open navigation menu'}
           aria-expanded={open}
           style={{
@@ -147,6 +147,7 @@ export function Nav() {
       {/* Mobile drawer */}
       {open && (
         <div
+          className="cabo-mobile-menu"
           style={{
             position: 'fixed',
             inset: 0,
