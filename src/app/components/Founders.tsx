@@ -4,6 +4,7 @@ import { Linkedin } from 'lucide-react';
 const founders = [
   {
     initial: 'CJ',
+    portrait: '/images/founders/cayelaem.jpg',
     name: 'Cayelaem',
     surname: 'Jantjies',
     pronoun: 'he/him',
@@ -18,6 +19,7 @@ const founders = [
   },
   {
     initial: 'BM',
+    portrait: '/images/founders/bokamoso.jpg',
     name: 'Bokamoso',
     surname: 'Molefi',
     pronoun: 'she/her',
@@ -75,62 +77,19 @@ function FounderCard({ founder, index }: { founder: typeof founders[0]; index: n
       }} />
 
       <div style={{ padding: '2.5rem 2.5rem 3rem' }}>
-        {/* Monogram avatar */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: '1.2rem',
-          marginBottom: '1.8rem',
-        }}>
-          <div style={{
-            width: '64px',
-            height: '64px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, rgba(196,103,58,0.3), rgba(201,168,76,0.2))',
-            border: '1px solid rgba(196,103,58,0.35)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontFamily: 'var(--font-display)',
-            fontSize: '1.2rem',
-            fontWeight: 700,
-            color: 'var(--cabo-clay)',
-            flexShrink: 0,
-          }}>
-            {founder.initial}
-          </div>
-          <div>
-            {/* Name */}
-            <div style={{ marginBottom: '0.2rem' }}>
-              <span style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: '1.8rem',
-                fontWeight: 700,
-                color: 'var(--cabo-warm-white)',
-              }}>
-                {founder.name}{' '}
-              </span>
-              <em style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: '1.8rem',
-                fontWeight: 400,
-                fontStyle: 'italic',
-                color: 'var(--cabo-sand)',
-              }}>
-                {founder.surname}
-              </em>
-            </div>
-            {/* Pronoun */}
-            <div style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.55rem',
-              color: 'rgba(201,168,76,0.5)',
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase',
-            }}>
-              {founder.pronoun}
-            </div>
-          </div>
+        {/* Editorial portrait: colour-graded assets supplied by the founders. */}
+        <div style={{ position: 'relative', aspectRatio: '5 / 4', marginBottom: '1.8rem', overflow: 'hidden', background: '#24201d', borderRadius: '3px' }}>
+          <img
+            src={founder.portrait}
+            alt={`Portrait of ${founder.name} ${founder.surname}, CABO Solutions co-founder`}
+            loading="lazy"
+            style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 30%', filter: 'saturate(0.82) contrast(1.06) sepia(0.08)' }}
+          />
+          <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'linear-gradient(0deg, rgba(13,17,23,0.42), transparent 48%)' }} />
+          <span style={{ position: 'absolute', left: '1rem', bottom: '1rem', color: '#fff', fontFamily: 'var(--font-mono)', fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Co-founder</span>
+        </div>
+        <div style={{ marginBottom: '1.5rem' }}>
+          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.45rem, 3vw, 2rem)', color: 'var(--cabo-warm-white)', lineHeight: 1.2, overflowWrap: 'anywhere' }}>{founder.name} <em style={{ color: 'var(--cabo-sand)' }}>{founder.surname}</em></h3>
         </div>
 
         {/* Title */}
@@ -295,7 +254,7 @@ export function Founders() {
       id="founders"
       style={{
         background: '#0D1117',
-        padding: '8rem 5rem',
+        padding: 'clamp(4rem, 7vw, 8rem) clamp(1rem, 5vw, 5rem)',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -370,7 +329,7 @@ export function Founders() {
         {/* Cards */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))',
           gap: '2rem',
         }}>
           {founders.map((f, i) => (
