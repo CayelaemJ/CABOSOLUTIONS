@@ -40,9 +40,78 @@ canvas {
   max-width: 100%;
 }
 
+
+/* Explicit navigation classes prevent inline styles from defeating responsive
+   visibility rules on small screens. */
+.cabo-nav {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.cabo-nav-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.cabo-nav-toggle {
+  flex: 0 0 auto;
+  min-width: 44px;
+  min-height: 44px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.cabo-mobile-menu {
+  box-sizing: border-box;
+}
+
+@media (max-width: 767px) {
+  .cabo-nav-links {
+    display: none !important;
+  }
+
+  .cabo-nav-toggle {
+    display: inline-flex !important;
+  }
+
+  .cabo-mobile-menu {
+    top: 64px !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    padding: 1.5rem !important;
+    overflow-y: auto;
+    justify-content: flex-start !important;
+    gap: 0.75rem !important;
+    border-top: 1px solid rgba(196, 103, 58, 0.22);
+  }
+
+  .cabo-mobile-menu a {
+    width: min(100%, 360px);
+    min-height: 52px;
+    box-sizing: border-box;
+    padding: 0.9rem 1rem;
+    border: 1px solid rgba(232, 213, 190, 0.12);
+    background: rgba(255, 255, 255, 0.025);
+  }
+}
+
+@media (min-width: 768px) {
+  .cabo-nav-links {
+    display: flex !important;
+  }
+
+  .cabo-nav-toggle {
+    display: none !important;
+  }
+}
+
 /* Tablet: use the available width instead of desktop-sized gutters. */
 @media (min-width: 768px) and (max-width: 1100px) {
-  nav {
+  .cabo-nav {
     padding-left: 2rem !important;
     padding-right: 2rem !important;
   }
@@ -63,12 +132,12 @@ canvas {
 
 /* Phones: one-column layout, comfortable touch targets, no horizontal overflow. */
 @media (max-width: 767px) {
-  nav {
+  .cabo-nav {
     height: 64px;
     padding: 0.8rem var(--cabo-mobile-gutter) !important;
   }
 
-  nav a {
+  .cabo-nav a {
     max-width: 70vw;
   }
 
@@ -177,12 +246,12 @@ canvas {
   }
 
   /* Mobile navigation drawer */
-  nav + div {
+  .cabo-mobile-menu {
     padding: 5.5rem 1.5rem 2rem;
     overflow-y: auto;
   }
 
-  nav + div a {
+  .cabo-mobile-menu a {
     min-height: 48px;
     display: flex;
     align-items: center;
