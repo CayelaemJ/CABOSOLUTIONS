@@ -13,7 +13,7 @@ const services = [
     num: '02',
     icon: Zap,
     title: 'Automation & Workflows',
-    description: 'We eliminate repetitive manual work by building smart automation flows that save your team hours every day — from approvals to reporting.',
+    description: 'We build Power Automate and API-connected workflows for email processing, document handling, approvals, stock alerts and scheduled reporting.',
     tags: ['Power Automate', 'Zapier', 'Make'],
   },
   {
@@ -44,7 +44,7 @@ const services = [
     description: 'We train teams to communicate with confidence and craft PR strategies that build brand credibility — from press releases to crisis comms.',
     tags: ['PR Strategy', 'Training', 'Messaging', 'Media'],
   },
-  { num: '07', icon: Code2, title: 'Software & App Development', description: 'Custom internal tools, web applications, Power BI embedding and multi-tenant platforms scoped to operational needs.', tags: ['Web Apps', 'Integrations', 'RBAC', 'Power BI Embedding'] },
+  { num: '07', icon: Code2, title: 'Software & App Development', description: 'React and Node.js applications, REST APIs, PostgreSQL integrations, authenticated portals, role-based access and multi-tenant SaaS foundations, scoped to operational needs.', tags: ['React', 'TypeScript', 'Node.js', 'PostgreSQL', 'RBAC', 'SaaS'] },
   { num: '08', icon: ShieldCheck, title: 'Data Governance & Compliance', description: 'POPIA readiness assessments, data flow mapping, policy documentation and practical remediation support. Legal compliance is not guaranteed.', tags: ['POPIA', 'Data Mapping', 'Risk Assessment', 'Governance'] },
   { num: '09', icon: GraduationCap, title: 'Training & Enablement', description: 'Documentation, live training sessions and team enablement so clients can confidently operate their delivered systems.', tags: ['Documentation', 'Workshops', 'Handover'] },
 ];
