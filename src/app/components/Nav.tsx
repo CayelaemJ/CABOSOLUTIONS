@@ -130,6 +130,8 @@ export function Nav() {
         <button
           className="md:hidden"
           onClick={() => setOpen(!open)}
+          aria-label={open ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={open}
           style={{
             background: 'none',
             border: 'none',
