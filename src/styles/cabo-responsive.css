@@ -1,6 +1,20 @@
-/* CABO production refinements layered over the extracted Figma Make design. */
+/* CABO responsive / production refinements.
+   Keeps the extracted Figma design intact while making the experience
+   deliberate across phones, tablets and smaller laptops. */
+
 :root {
   color-scheme: dark;
+  --cabo-mobile-gutter: clamp(1rem, 4vw, 1.5rem);
+}
+
+html {
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-width: 320px;
+  overflow-x: hidden;
 }
 
 section[id] {
@@ -15,37 +29,223 @@ textarea {
   -webkit-tap-highlight-color: transparent;
 }
 
-@media (max-width: 767px) {
+a,
+button {
+  touch-action: manipulation;
+}
+
+img,
+svg,
+canvas {
+  max-width: 100%;
+}
+
+/* Tablet: use the available width instead of desktop-sized gutters. */
+@media (min-width: 768px) and (max-width: 1100px) {
   nav {
-    padding: 0.9rem 1.1rem !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
   }
 
   section {
-    padding-left: 1.1rem !important;
-    padding-right: 1.1rem !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
   }
 
-  footer > div:not(:first-child) {
-    padding-left: 1.1rem !important;
-    padding-right: 1.1rem !important;
+  section > div[style*="grid-template-columns"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 
-  h1 {
-    font-size: clamp(2.35rem, 12vw, 4rem) !important;
+  section > div > div[style*="grid-template-columns"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 }
 
-@media (max-width: 480px) {
+/* Phones: one-column layout, comfortable touch targets, no horizontal overflow. */
+@media (max-width: 767px) {
+  nav {
+    height: 64px;
+    padding: 0.8rem var(--cabo-mobile-gutter) !important;
+  }
+
+  nav a {
+    max-width: 70vw;
+  }
+
   section {
-    padding-top: 5.5rem !important;
-    padding-bottom: 5.5rem !important;
+    padding-left: var(--cabo-mobile-gutter) !important;
+    padding-right: var(--cabo-mobile-gutter) !important;
+  }
+
+  section > div[style*="grid-template-columns"],
+  section > div > div[style*="grid-template-columns"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 1rem !important;
+  }
+
+  /* Hero */
+  #hero {
+    min-height: auto !important;
+    padding-top: 7.5rem !important;
+    padding-bottom: 6rem !important;
+    align-items: flex-start !important;
+  }
+
+  #hero > div[style*="maxWidth"] {
+    gap: 2rem !important;
+  }
+
+  #hero h1 {
+    font-size: clamp(2.7rem, 15vw, 4.5rem) !important;
+  }
+
+  #hero [style*="font-size: clamp(3.8rem"] {
+    font-size: clamp(3.4rem, 17vw, 5.2rem) !important;
+  }
+
+  #hero p {
+    font-size: 0.98rem !important;
+    line-height: 1.7 !important;
+  }
+
+  #hero a[href="#services"],
+  #hero a[href="#contact"] {
+    min-height: 48px;
+    flex: 1 1 100%;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0.9rem 1rem !important;
+  }
+
+  #hero [style*="gap: 3rem"] {
+    gap: 1.25rem !important;
+  }
+
+  #hero [style*="gap: 3rem"] > div {
+    flex: 1 1 40%;
+    min-width: 110px;
+  }
+
+  #hero [style*="position: absolute"][style*="bottom"] {
+    display: none;
+  }
+
+  /* Sections */
+  section {
+    padding-top: 5rem !important;
+    padding-bottom: 5rem !important;
+  }
+
+  section h2 {
+    font-size: clamp(2rem, 10vw, 3rem) !important;
+  }
+
+  /* Prevent oversized cards/forms from forcing the viewport wider. */
+  section > div {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  section [style*="padding: 2.5rem"] {
+    padding: 1.25rem !important;
+  }
+
+  section [style*="gap: 6rem"] {
+    gap: 2.5rem !important;
+  }
+
+  /* Contact form */
+  #contact input,
+  #contact select,
+  #contact textarea,
+  #contact button {
+    font-size: 16px !important; /* prevents iOS Safari zoom on focus */
+  }
+
+  #contact input,
+  #contact select,
+  #contact textarea {
+    min-height: 48px;
+    box-sizing: border-box;
+  }
+
+  #contact textarea {
+    min-height: 140px !important;
+  }
+
+  /* Mobile navigation drawer */
+  nav + div {
+    padding: 5.5rem 1.5rem 2rem;
+    overflow-y: auto;
+  }
+
+  nav + div a {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Footer stacks cleanly. */
+  footer {
+    overflow: hidden;
+  }
+
+  footer > div {
+    max-width: 100% !important;
   }
 
   footer nav {
     gap: 0.9rem !important;
+    flex-wrap: wrap;
   }
 }
 
+/* Small phones. */
+@media (max-width: 480px) {
+  section {
+    padding-top: 4.5rem !important;
+    padding-bottom: 4.5rem !important;
+  }
+
+  #hero {
+    padding-top: 6.75rem !important;
+  }
+
+  #hero [style*="gap: 3rem"] > div {
+    min-width: 100%;
+  }
+
+  #hero [style*="font-size: 2.2rem"] {
+    font-size: 1.8rem !important;
+  }
+
+  /* Long email addresses and URLs should never break the layout. */
+  a,
+  p,
+  label,
+  span {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Landscape phones: reclaim vertical space. */
+@media (max-width: 767px) and (orientation: landscape) {
+  #hero {
+    padding-top: 5.5rem !important;
+    padding-bottom: 4rem !important;
+  }
+
+  section {
+    padding-top: 4rem !important;
+    padding-bottom: 4rem !important;
+  }
+}
+
+/* Respect users who prefer reduced motion. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
