@@ -48,6 +48,11 @@ export function Contact() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const subject = encodeURIComponent(`CABO enquiry from ${form.name}`);
+    const body = encodeURIComponent(
+      `Name: ${form.name}\nEmail: ${form.email}\nOrganisation: ${form.org || 'Not provided'}\nService: ${form.service}\n\n${form.message}`
+    );
+    window.location.href = `mailto:hello@cabosolutions.co.za?subject=${subject}&body=${body}`;
     setSubmitted(true);
   };
 
