@@ -4,13 +4,13 @@ import { Check } from 'lucide-react';
 const plans = [
   {
     name: 'Launch Ready',
-    price: 'From R3,500',
+    price: 'Scoped quote',
     cadence: '/ project',
-    description: 'A narrowly scoped first improvement, such as a simple automation, data fix or reporting enhancement.',
+    description: 'Focused, clearly defined projects. Investment varies with complexity, delivery effort and business requirements.',
     featured: false,
     features: [
       'One small, agreed deliverable',
-      '1 round of revisions included',
+      'Revision allowance agreed in writing',
       'Practical handover notes',
       'Timeline agreed to fit the selected task',
       'Onboarding call + walkthrough session',
@@ -19,17 +19,17 @@ const plans = [
   },
   {
     name: 'Full Momentum',
-    price: 'From R12,000',
+    price: 'From R15,000',
     cadence: '/ month',
     description: 'A monthly allocation for ongoing reporting, data engineering, application maintenance or workflow improvements.',
     featured: true,
     badge: 'Integrated retainer',
     features: [
-      'Monthly work allocation agreed in advance',
+      'Defined monthly hours and deliverables',
       'Data, BI, software or automation support',
       'Monthly ops check-ins',
       'Prioritised delivery backlog',
-      'Weekly delivery cadence',
+      'Support and response times agreed in writing',
       'Scope and deliverables agreed in writing',
     ],
     cta: 'Start Your Momentum',
@@ -307,18 +307,18 @@ export function Pricing() {
 
         {/* Selected catalog packages: indicative pricing, not a fixed-price checkout. */}
         <div style={{ marginTop: '4rem' }}>
-          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.5rem, 3vw, 2.2rem)', color: 'var(--cabo-warm-white)', marginBottom: '0.8rem' }}>Explore starting prices by service</h3>
-          <p style={{ color: 'rgba(245,237,224,0.65)', lineHeight: 1.7, maxWidth: '740px', marginBottom: '1.5rem' }}>These are proposed introductory small-scope packages, distinct from our September 2026 catalog's larger project packages. They are separate from the engagement tiers above. Your final proposal will confirm scope, timeline, licensing costs and investment in writing.</p>
+          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.5rem, 3vw, 2.2rem)', color: 'var(--cabo-warm-white)', marginBottom: '0.8rem' }}>Indicative investment by service</h3>
+          <p style={{ color: 'rgba(245,237,224,0.65)', lineHeight: 1.7, maxWidth: '740px', marginBottom: '1.5rem' }}>These are indicative planning ranges, not fixed-price offers. We tailor every quotation to scope, effort and technical complexity. They are separate from the engagement tiers above. Your final proposal will confirm scope, timeline, licensing costs and investment in writing.</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1rem' }}>
             {[
-              ['Data & BI', 'Dashboard improvement', 'From R2,500', 'Scoped after discovery'],
-              ['SQL & Data', 'Query optimisation or data cleanup', 'From R3,000', 'Scoped after discovery'],
-              ['Automation', 'Basic workflow', 'From R3,500', 'Scoped after discovery'],
-              ['Business Intelligence', 'Starter Power BI dashboard', 'From R5,000', 'Scoped after discovery'],
-              ['Web Development', 'Landing page or simple website', 'From R6,000', 'Scoped after discovery'],
-              ['APIs & Integration', 'Data integration or API setup', 'From R7,500', 'Scoped after discovery'],
-              ['Software Engineering', 'Custom internal business application', 'From R15,000', 'Scoped after discovery'],
-              ['Advanced Analytics', 'Forecasting or analytics starter', 'From R8,000', 'Scoped after discovery'],
+              ['Technical Consulting', 'Discovery and solution scoping', 'R1,500–R3,500', 'Scope confirmed in quote'],
+              ['SQL & Data', 'Query optimisation or data cleanup', 'R4,500–R12,000', 'Scope confirmed in quote'],
+              ['Business Intelligence', 'Power BI dashboard development', 'R8,000–R25,000', 'Scope confirmed in quote'],
+              ['Automation', 'Workflow design and implementation', 'R6,000–R20,000', 'Scope confirmed in quote'],
+              ['Web Development', 'Business website development', 'R10,000–R30,000', 'Scope confirmed in quote'],
+              ['APIs & Integration', 'API and data integration', 'R10,000–R35,000', 'Scope confirmed in quote'],
+              ['Advanced Analytics', 'Analytics and forecasting', 'R18,000–R50,000', 'Scope confirmed in quote'],
+              ['Software Engineering', 'Custom business applications', 'R35,000–R120,000+', 'Scope confirmed in quote'],
             ].map(([discipline, packageName, price, timeline]) => (
               <div key={packageName} style={{ padding: '1.4rem', border: '1px solid rgba(196,103,58,0.22)', background: 'var(--cabo-ink)', borderRadius: '4px', minWidth: 0 }}>
                 <div style={{ color: 'var(--cabo-clay)', fontSize: '0.7rem', letterSpacing: '0.05em', marginBottom: '0.6rem' }}>{discipline}</div>
@@ -329,7 +329,7 @@ export function Pricing() {
               </div>
             ))}
           </div>
-          <p style={{ color: 'rgba(245,237,224,0.55)', fontSize: '0.8rem', lineHeight: 1.7, marginTop: '1.25rem' }}>Proposed introductory prices in South African rand (ZAR), subject to scope and written confirmation. Third-party licences and expenses are quoted separately where applicable. The Enablement Add-On is bundled with a build, rather than sold as a standalone project.</p>
+          <p style={{ color: 'rgba(245,237,224,0.55)', fontSize: '0.8rem', lineHeight: 1.7, marginTop: '1.25rem' }}>Indicative ranges in South African rand (ZAR), not binding offers. Final quotes depend on requirements, data readiness, number of systems, complexity, delivery urgency, testing, revisions and support. Third-party licences and expenses are itemised where applicable. Changes beyond the agreed scope are separately quoted and approved before work begins. Enterprise SaaS and large-scale platforms are custom quoted.</p>
         </div>
 
         {/* NGO note */}
