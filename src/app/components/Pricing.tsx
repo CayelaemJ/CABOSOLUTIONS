@@ -308,17 +308,17 @@ export function Pricing() {
         {/* Selected catalog packages: indicative pricing, not a fixed-price checkout. */}
         <div style={{ marginTop: '4rem' }}>
           <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.5rem, 3vw, 2.2rem)', color: 'var(--cabo-warm-white)', marginBottom: '0.8rem' }}>Indicative investment by service</h3>
-          <p style={{ color: 'rgba(245,237,224,0.65)', lineHeight: 1.7, maxWidth: '740px', marginBottom: '1.5rem' }}>These are indicative planning ranges, not fixed-price offers. We tailor every quotation to scope, effort and technical complexity. They are separate from the engagement tiers above. Your final proposal will confirm scope, timeline, licensing costs and investment in writing.</p>
+          <p style={{ color: 'rgba(245,237,224,0.65)', lineHeight: 1.7, maxWidth: '740px', marginBottom: '1.5rem' }}>These are indicative planning ranges, informed by publicly listed South African consulting prices. They are not fixed-price offers or a promise to beat every competitor quote. We tailor each quotation to scope, effort and technical complexity. They are separate from the engagement tiers above. Your final proposal will confirm scope, timeline, licensing costs and investment in writing.</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1rem' }}>
             {[
-              ['Technical Consulting', 'Discovery and solution scoping', 'R1,500–R3,500', 'Scope confirmed in quote'],
-              ['SQL & Data', 'Query optimisation or data cleanup', 'R4,500–R12,000', 'Scope confirmed in quote'],
-              ['Business Intelligence', 'Power BI dashboard development', 'R8,000–R25,000', 'Scope confirmed in quote'],
-              ['Automation', 'Workflow design and implementation', 'R6,000–R20,000', 'Scope confirmed in quote'],
-              ['Web Development', 'Business website development', 'R10,000–R30,000', 'Scope confirmed in quote'],
-              ['APIs & Integration', 'API and data integration', 'R10,000–R35,000', 'Scope confirmed in quote'],
-              ['Advanced Analytics', 'Analytics and forecasting', 'R18,000–R50,000', 'Scope confirmed in quote'],
-              ['Software Engineering', 'Custom business applications', 'R35,000–R120,000+', 'Scope confirmed in quote'],
+              ['Technical Consulting', 'Discovery and solution scoping', 'R3,500–R7,000', 'Scope confirmed in quote'],
+              ['SQL & Data', 'Query optimisation or data cleanup', 'R6,000–R18,000', 'Scope confirmed in quote'],
+              ['Business Intelligence', 'Power BI dashboard development', 'R15,000–R35,000', 'Scope confirmed in quote'],
+              ['Automation', 'Workflow design and implementation', 'R8,000–R30,000', 'Scope confirmed in quote'],
+              ['Web Development', 'Business website development', 'R13,000–R45,000', 'Scope confirmed in quote'],
+              ['APIs & Integration', 'API and data integration', 'R15,000–R50,000', 'Scope confirmed in quote'],
+              ['Advanced Analytics', 'Analytics and forecasting', 'R25,000–R75,000', 'Scope confirmed in quote'],
+              ['Software Engineering', 'Custom business applications', 'R65,000–R200,000+', 'Scope confirmed in quote'],
             ].map(([discipline, packageName, price, timeline]) => (
               <div key={packageName} style={{ padding: '1.4rem', border: '1px solid rgba(196,103,58,0.22)', background: 'var(--cabo-ink)', borderRadius: '4px', minWidth: 0 }}>
                 <div style={{ color: 'var(--cabo-clay)', fontSize: '0.7rem', letterSpacing: '0.05em', marginBottom: '0.6rem' }}>{discipline}</div>
@@ -329,7 +329,7 @@ export function Pricing() {
               </div>
             ))}
           </div>
-          <p style={{ color: 'rgba(245,237,224,0.55)', fontSize: '0.8rem', lineHeight: 1.7, marginTop: '1.25rem' }}>Indicative ranges in South African rand (ZAR), not binding offers. Final quotes depend on requirements, data readiness, number of systems, complexity, delivery urgency, testing, revisions and support. Third-party licences and expenses are itemised where applicable. Changes beyond the agreed scope are separately quoted and approved before work begins. Enterprise SaaS and large-scale platforms are custom quoted.</p>
+          <p style={{ color: 'rgba(245,237,224,0.55)', fontSize: '0.8rem', lineHeight: 1.7, marginTop: '1.25rem' }}>Indicative ranges in South African rand (ZAR), not binding offers. Final quotes depend on requirements, data readiness, number of systems, complexity, delivery urgency, testing, revisions and support. Third-party licences and expenses are itemised where applicable. Changes beyond the agreed scope are separately quoted and approved before work begins. Enterprise SaaS and large-scale platforms are custom quoted. We aim for competitive value against comparable South African specialist consultancies, not the lowest possible price. For pricing context, see published provider rates at trinityandbennettconsulting.co.za/rates, bidashboards.co.za/pricing and randcore.co.za/services.</p>
         </div>
 
         {/* NGO note */}
