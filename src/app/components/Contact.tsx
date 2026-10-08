@@ -157,14 +157,14 @@ export function Contact() {
                 {
                   name: 'Cayelaem Jantjies',
                   role: 'Data Engineer & BI Lead',
-                  email: 'cayelaem@cabosolutions.co.za',
+                  email: 'cayelaem@cabosolutionsza.cloud-ip.cc',
                   phone: '+27 64 500 7574',
                   linkedin: 'https://www.linkedin.com/in/cayelaem-jantjies-000b45144/',
                 },
                 {
                   name: 'Bokamoso Molefi',
                   role: 'Operations & Marketing Lead',
-                  email: 'bokamoso@cabosolutions.co.za',
+                  email: 'bokamoso.molefi@cabosolutionsza.cloud-ip.cc',
                   phone: '+27 74 787 7904',
                   linkedin: 'https://www.linkedin.com/in/bokamoso-molefi-4a1b89239/',
                 },
