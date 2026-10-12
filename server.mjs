@@ -57,7 +57,7 @@ http.createServer(async(req,res)=>{
   if(req.method!=='GET'&&req.method!=='HEAD')return json(res,405,{error:'Method not allowed'});
   if(path.includes('\0')||path.split('/').includes('..'))return json(res,400,{error:'Bad path'});
   let file=resolve(dist,'.'+path); if(!file.startsWith(dist+sep)&&file!==dist)return json(res,403,{error:'Forbidden'});
-  try{if(!(await stat(file)).isFile())file=resolve(dist,'index.html');}catch{file=resolve(dist,'index.html');}
-  try {const body=await readFile(file);res.writeHead(200,{'Content-Type':mime[extname(file)]||'application/octet-stream','X-Content-Type-Options':'nosniff','Cache-Control':file.endsWith('index.html')?'no-cache':'public, max-age=3600'});res.end(req.method==='HEAD'?undefined:body);}
+  try { if (!(await stat(file)).isFile()) file = resolve(dist, 'index.html'); } catch { if (extname(path)) return json(res,404,{error:'Asset not found'}); file=resolve(dist,'index.html'); }
+  try {const body=await readFile(file);res.writeHead(200,{'Content-Type':mime[extname(file)]||'application/octet-stream','X-Content-Type-Options':'nosniff','Cache-Control':file.endsWith('index.html')?'no-cache':'public, max-age=3600','Vary':'Accept-Encoding'});res.end(req.method==='HEAD'?undefined:body);}
   catch{json(res,503,{error:'Site build not available'});}
 }).listen(port,'0.0.0.0',()=>console.log('CABO site listening on '+port));
