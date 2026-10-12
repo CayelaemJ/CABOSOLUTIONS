@@ -2,6 +2,7 @@ import http from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { resolve, extname, sep } from 'node:path';
 import { Pool } from 'pg';
+import nodemailer from 'nodemailer';
 
 const port = Number(process.env.PORT || 3000);
 const dist = resolve('dist');
@@ -13,12 +14,55 @@ const schema = `CREATE TABLE IF NOT EXISTS cabo_enquiries (id BIGSERIAL PRIMARY 
 let ready = null;
 async function db() { if (!pool) throw new Error('DATABASE_URL is not configured'); if (!ready) ready=pool.query(schema).catch(e=>{ready=null;throw e}); await ready; return pool; }
 async function notify(enquiry) {
-  if (!process.env.RESEND_API_KEY || !process.env.NOTIFY_EMAIL || !process.env.MAIL_FROM) { console.warn('Enquiry email notification is not configured; enquiry will be saved without email alert.'); return 'not_configured'; }
-  const body = {from:process.env.MAIL_FROM,to:[process.env.NOTIFY_EMAIL],subject:'New CABO Solutions enquiry',text:`New enquiry\nName: ${enquiry.name}\nEmail: ${enquiry.email}\nOrganisation: ${enquiry.org}\nService: ${enquiry.service}\n\n${enquiry.message}`};
-  const response = await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${process.env.RESEND_API_KEY}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
-  if(!response.ok) throw new Error('Notification provider returned '+response.status);
+  const recipient = process.env.NOTIFY_EMAIL;
+  const subject = 'New CABO Solutions enquiry';
+  const text = `New enquiry
+Name: ${enquiry.name}
+Email: ${enquiry.email}
+Organisation: ${enquiry.org}
+Service: ${enquiry.service}
+
+${enquiry.message}`;
+  if (!recipient) {
+    console.warn('Enquiry notification recipient is not configured');
+    return 'not_configured';
+  }
+  // Prefer CABO's existing authenticated Zoho mailbox to avoid requiring a second sending domain.
+  if (process.env.SMTP_USER && process.env.SMTP_PASSWORD && process.env.SMTP_HOST) {
+    const port = Number(process.env.SMTP_PORT || 587);
+    const transport = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port,
+      secure: port === 465,
+      requireTLS: port !== 465,
+      connectionTimeout: 12000,
+      greetingTimeout: 12000,
+      socketTimeout: 15000,
+      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD },
+    });
+    await transport.sendMail({
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+      to: recipient,
+      replyTo: enquiry.email,
+      subject,
+      text,
+    });
+    console.info('Enquiry notification accepted by SMTP server');
+    return 'sent';
+  }
+  if (!process.env.RESEND_API_KEY || !process.env.MAIL_FROM) {
+    console.warn('Enquiry email notification is not configured; enquiry is saved without email alert');
+    return 'not_configured';
+  }
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from: process.env.MAIL_FROM, to: [recipient], subject, text }),
+  });
+  if (!response.ok) throw new Error('Notification provider returned ' + response.status);
   return 'sent';
 }
+
 async function api(req,res,path) {
   if (path==='/api/health' && req.method==='GET') return json(res,200,{status:'ok',databaseConfigured:!!pool});
   if (path==='/api/enquiries' && req.method==='POST') {
