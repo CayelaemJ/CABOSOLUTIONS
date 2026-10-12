@@ -13,7 +13,7 @@ const schema = `CREATE TABLE IF NOT EXISTS cabo_enquiries (id BIGSERIAL PRIMARY 
 let ready = null;
 async function db() { if (!pool) throw new Error('DATABASE_URL is not configured'); if (!ready) ready=pool.query(schema).catch(e=>{ready=null;throw e}); await ready; return pool; }
 async function notify(enquiry) {
-  if (!process.env.RESEND_API_KEY || !process.env.NOTIFY_EMAIL || !process.env.MAIL_FROM) return 'not_configured';
+  if (!process.env.RESEND_API_KEY || !process.env.NOTIFY_EMAIL || !process.env.MAIL_FROM) { console.warn('Enquiry email notification is not configured; enquiry will be saved without email alert.'); return 'not_configured'; }
   const body = {from:process.env.MAIL_FROM,to:[process.env.NOTIFY_EMAIL],subject:'New CABO Solutions enquiry',text:`New enquiry\nName: ${enquiry.name}\nEmail: ${enquiry.email}\nOrganisation: ${enquiry.org}\nService: ${enquiry.service}\n\n${enquiry.message}`};
   const response = await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${process.env.RESEND_API_KEY}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
   if(!response.ok) throw new Error('Notification provider returned '+response.status);
@@ -26,7 +26,7 @@ async function api(req,res,path) {
     const {name,email,org='',service,message,website=''}=payload || {};
     if(website) return json(res,200,{received:true});
     if(typeof name!=='string'||name.trim().length<2||name.length>120||typeof email!=='string'||email.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||typeof org!=='string'||org.length>200||typeof service!=='string'||!service.trim()||service.length>160||typeof message!=='string'||message.trim().length<10||message.length>5000) return json(res,422,{error:'Please complete all required fields with valid information.'});
-    if(!pool) return json(res,503,{error:'Enquiries are temporarily unavailable. Please email hello@cabosolutions.co.za.'});
+    if(!pool) return json(res,503,{error:'Enquiries are temporarily unavailable. Please email cayelaem@cabosolutionsza.cloud-ip.cc.'});
     const enquiry={name:name.trim(),email:email.trim(),org:org.trim(),service:service.trim(),message:message.trim()};
     try {
       const client=await db();
