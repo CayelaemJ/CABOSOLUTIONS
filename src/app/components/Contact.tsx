@@ -313,7 +313,7 @@ export function Contact() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit}>
-                  {error && <p role="alert" style={{ color: '#ffb4a2', marginBottom: '1rem', lineHeight: 1.5 }}>{error} <a href="mailto:hello@cabosolutions.co.za" style={{color:'inherit'}}>Email us instead</a>.</p>}
+                  {error && <p role="alert" style={{ color: '#ffb4a2', marginBottom: '1rem', lineHeight: 1.5 }}>{error} <a href="mailto:cayelaem@cabosolutionsza.cloud-ip.cc" style={{color:'inherit'}}>Email us instead</a>.</p>}
                   <h3 style={{
                     fontFamily: 'var(--font-display)',
                     fontSize: '1.3rem',
