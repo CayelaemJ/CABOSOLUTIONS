@@ -1,4 +1,5 @@
 import http from 'node:http';
+import { randomBytes, createCipheriv, createDecipheriv, timingSafeEqual } from 'node:crypto';
 import { readFile, stat } from 'node:fs/promises';
 import { resolve, extname, sep } from 'node:path';
 import { Pool } from 'pg';
@@ -23,14 +24,16 @@ async function zohoRequest(url, options = {}) {
 }
 async function getZohoAccessToken() {
   if (zohoToken && Date.now() < zohoTokenExpires) return zohoToken;
-  const required = ['ZOHO_CLIENT_ID','ZOHO_CLIENT_SECRET','ZOHO_REFRESH_TOKEN'];
+  const required = ['ZOHO_CLIENT_ID','ZOHO_CLIENT_SECRET'];
   if (required.some(name => !process.env[name])) throw new Error('Zoho OAuth credentials are not configured');
+  const refreshToken = process.env.ZOHO_REFRESH_TOKEN || await savedZohoRefreshToken();
+  if (!refreshToken) throw new Error('Zoho refresh token not configured');
   const url = new URL('/oauth/v2/token', process.env.ZOHO_ACCOUNTS_URL || 'https://accounts.zoho.com');
   const params = new URLSearchParams({
     grant_type: 'refresh_token',
     client_id: process.env.ZOHO_CLIENT_ID,
     client_secret: process.env.ZOHO_CLIENT_SECRET,
-    refresh_token: process.env.ZOHO_REFRESH_TOKEN,
+    refresh_token: refreshToken,
   });
   const response = await zohoRequest(url.toString(), { method: 'POST', body: params });
   if (!response.access_token) throw new Error('Zoho did not issue an access token');
@@ -80,7 +83,7 @@ ${enquiry.message}`;
     console.warn('Enquiry notification recipient is not configured');
     return 'not_configured';
   }
-  if (process.env.ZOHO_CLIENT_ID && process.env.ZOHO_CLIENT_SECRET && process.env.ZOHO_REFRESH_TOKEN && process.env.ZOHO_FROM_EMAIL) {
+  if (process.env.ZOHO_CLIENT_ID && process.env.ZOHO_CLIENT_SECRET && process.env.ZOHO_FROM_EMAIL) {
     await sendZohoMail(recipient, subject, text);
     return 'sent';
   }
@@ -120,7 +123,78 @@ ${enquiry.message}`;
   return 'sent';
 }
 
+
+// Encrypted persistent OAuth token; never store the refresh token in plaintext or send it to the browser.
+const zohoTokenSchema = 'CREATE TABLE IF NOT EXISTS cabo_oauth_tokens (provider TEXT PRIMARY KEY, token_encrypted TEXT NOT NULL, updated_at TIMESTAMPTZ DEFAULT NOW())';
+function tokenKey() {
+  const raw = process.env.ZOHO_TOKEN_ENCRYPTION_KEY;
+  if (!raw || !/^[a-f0-9]{64}$/i.test(raw)) throw new Error('OAuth encryption key missing');
+  return Buffer.from(raw, 'hex');
+}
+function encryptToken(value) {
+  const iv = randomBytes(12);
+  const cipher = createCipheriv('aes-256-gcm', tokenKey(), iv);
+  const data = Buffer.concat([cipher.update(value, 'utf8'), cipher.final()]);
+  return [iv, cipher.getAuthTag(), data].map(part => part.toString('base64')).join('.');
+}
+function decryptToken(value) {
+  const [iv, tag, data] = value.split('.').map(part => Buffer.from(part, 'base64'));
+  const cipher = createDecipheriv('aes-256-gcm', tokenKey(), iv);
+  cipher.setAuthTag(tag);
+  return Buffer.concat([cipher.update(data), cipher.final()]).toString('utf8');
+}
+async function savedZohoRefreshToken() {
+  const connection = await db();
+  await connection.query(zohoTokenSchema);
+  const result = await connection.query("SELECT token_encrypted FROM cabo_oauth_tokens WHERE provider='zoho' LIMIT 1");
+  return result.rows.length ? decryptToken(result.rows[0].token_encrypted) : null;
+}
+let setupAttempts = [];
+async function handleZohoSetup(req, res) {
+  const now = Date.now();
+  setupAttempts = setupAttempts.filter(time => now - time < 15 * 60 * 1000);
+  if (setupAttempts.length >= 5) return json(res,429,{error:'Too many attempts. Please retry later.'});
+  let payload;
+  try { payload = await readJson(req); } catch { return json(res,400,{error:'Invalid request'}); }
+  const expected = process.env.ZOHO_SETUP_PASSWORD || '';
+  const actual = typeof payload?.password === 'string' ? payload.password : '';
+  const a = Buffer.from(expected); const b = Buffer.from(actual);
+  if (!expected || a.length !== b.length || !timingSafeEqual(a,b)) {
+    setupAttempts.push(now);
+    return json(res,401,{error:'Invalid setup password'});
+  }
+  if (!process.env.ZOHO_SETUP_ENABLED || process.env.ZOHO_SETUP_ENABLED !== 'true') return json(res,403,{error:'Setup disabled'});
+  if (!/^[a-zA-Z0-9._-]{15,250}$/.test(payload?.code || '')) return json(res,422,{error:'Invalid authorisation code'});
+  try {
+    const body = new URLSearchParams({
+      grant_type:'authorization_code',
+      client_id:process.env.ZOHO_CLIENT_ID,
+      client_secret:process.env.ZOHO_CLIENT_SECRET,
+      code:payload.code
+    });
+    const response = await fetch(new URL('/oauth/v2/token', process.env.ZOHO_ACCOUNTS_URL || 'https://accounts.zoho.com'), {
+      method:'POST', body, signal:AbortSignal.timeout(12000)
+    });
+    const data = await response.json();
+    if (!response.ok || !data.refresh_token) {
+      console.error('Zoho code exchange failed:',data.error || response.status);
+      return json(res,400,{error:'Zoho rejected the code. Generate a fresh code with the required scopes.'});
+    }
+    const connection = await db();
+    await connection.query(zohoTokenSchema);
+    await connection.query("INSERT INTO cabo_oauth_tokens (provider,token_encrypted) VALUES ('zoho',$1) ON CONFLICT (provider) DO UPDATE SET token_encrypted=$1,updated_at=NOW()",[encryptToken(data.refresh_token)]);
+    zohoToken = null; zohoTokenExpires = 0;
+    console.info('Zoho OAuth refresh token stored encrypted');
+    return json(res,200,{configured:true});
+  } catch(err) {
+    console.error('Zoho setup failed:',err.message);
+    return json(res,503,{error:'Unable to complete setup; check Railway logs'});
+  }
+}
+const setupPage = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CABO Zoho Setup</title><style>body{font:16px system-ui;background:#101316;color:#f5f2ed;max-width:480px;margin:12vh auto;padding:22px}input,button{box-sizing:border-box;display:block;width:100%;padding:15px;margin:12px 0;border-radius:8px;border:1px solid #888;background:#24292e;color:white}button{background:#a96b4a;border:0;font-weight:bold}p{line-height:1.5}</style><h1>CABO Zoho setup</h1><p>Generate a fresh code in Zoho Self Client with the ZohoMail.messages.CREATE and ZohoMail.accounts.READ scopes, then paste it below. The code is exchanged privately and the refresh token is encrypted in PostgreSQL.</p><form id="f"><label>Setup password<input type="password" name="password" required autocomplete="off"></label><label>Fresh authorisation code<input type="text" name="code" required autocomplete="off"></label><button>Connect Zoho</button></form><p id="msg" role="status"></p><script>document.getElementById('f').onsubmit=async e=>{e.preventDefault();const f=e.target,b=f.querySelector('button');b.disabled=true;document.getElementById('msg').textContent='Connecting…';try{const r=await fetch('/api/zoho/setup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(f)))});const d=await r.json();document.getElementById('msg').textContent=r.ok?'Zoho connected. You may close this page.':(d.error||'Setup failed');if(r.ok)f.reset()}catch{document.getElementById('msg').textContent='Network error'}finally{b.disabled=false}}</script></html>`;
+
 async function api(req,res,path) {
+  if (path==='/api/zoho/setup' && req.method==='POST') return handleZohoSetup(req,res);
   if (path==='/api/health' && req.method==='GET') return json(res,200,{status:'ok',databaseConfigured:!!pool});
   if (path==='/api/enquiries' && req.method==='POST') {
     let payload; try {payload=await readJson(req);} catch {return json(res,400,{error:'Invalid request body'});}
@@ -155,6 +229,7 @@ async function api(req,res,path) {
 http.createServer(async(req,res)=>{
   let path;try{path=decodeURIComponent(new URL(req.url,'http://localhost').pathname);}catch{return json(res,400,{error:'Bad URL'});}
   if(path.startsWith('/api/')) return api(req,res,path);
+  if(path==='/zoho-setup' && req.method==='GET') { if(process.env.ZOHO_SETUP_ENABLED!=='true') return json(res,404,{error:'Not found'});res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','X-Frame-Options':'DENY','Content-Security-Policy':"default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; form-action 'self'"});return res.end(setupPage); }
   if(req.method!=='GET'&&req.method!=='HEAD')return json(res,405,{error:'Method not allowed'});
   if(path.includes('\0')||path.split('/').includes('..'))return json(res,400,{error:'Bad path'});
   let file=resolve(dist,'.'+path); if(!file.startsWith(dist+sep)&&file!==dist)return json(res,403,{error:'Forbidden'});
