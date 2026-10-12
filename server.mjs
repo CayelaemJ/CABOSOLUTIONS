@@ -13,6 +13,59 @@ const readJson = async req => { let data=''; for await (const chunk of req) { da
 const schema = `CREATE TABLE IF NOT EXISTS cabo_enquiries (id BIGSERIAL PRIMARY KEY, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), name TEXT NOT NULL, email TEXT NOT NULL, organisation TEXT, service TEXT NOT NULL, message TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'new', updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
 let ready = null;
 async function db() { if (!pool) throw new Error('DATABASE_URL is not configured'); if (!ready) ready=pool.query(schema).catch(e=>{ready=null;throw e}); await ready; return pool; }
+let zohoToken = null;
+let zohoTokenExpires = 0;
+async function zohoRequest(url, options = {}) {
+  const response = await fetch(url, { ...options, signal: AbortSignal.timeout(12000) });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok || payload.status?.code >= 400) throw new Error('Zoho API request failed: ' + (payload.status?.code || response.status));
+  return payload;
+}
+async function getZohoAccessToken() {
+  if (zohoToken && Date.now() < zohoTokenExpires) return zohoToken;
+  const required = ['ZOHO_CLIENT_ID','ZOHO_CLIENT_SECRET','ZOHO_REFRESH_TOKEN'];
+  if (required.some(name => !process.env[name])) throw new Error('Zoho OAuth credentials are not configured');
+  const url = new URL('/oauth/v2/token', process.env.ZOHO_ACCOUNTS_URL || 'https://accounts.zoho.com');
+  const params = new URLSearchParams({
+    grant_type: 'refresh_token',
+    client_id: process.env.ZOHO_CLIENT_ID,
+    client_secret: process.env.ZOHO_CLIENT_SECRET,
+    refresh_token: process.env.ZOHO_REFRESH_TOKEN,
+  });
+  const response = await zohoRequest(url.toString(), { method: 'POST', body: params });
+  if (!response.access_token) throw new Error('Zoho did not issue an access token');
+  zohoToken = response.access_token;
+  zohoTokenExpires = Date.now() + Math.max(60, (Number(response.expires_in) || 3600) - 120) * 1000;
+  return zohoToken;
+}
+async function sendZohoMail(recipient, subject, content) {
+  const accessToken = await getZohoAccessToken();
+  const base = process.env.ZOHO_MAIL_API_URL || 'https://mail.zoho.com';
+  const headers = { Authorization: 'Zoho-oauthtoken ' + accessToken, Accept: 'application/json' };
+  let accountId = process.env.ZOHO_MAIL_ACCOUNT_ID;
+  if (!accountId) {
+    const accounts = await zohoRequest(base + '/api/accounts', { headers });
+    const entry = accounts.data?.find(item =>
+      item.primaryEmailAddress?.toLowerCase() === process.env.ZOHO_FROM_EMAIL?.toLowerCase() ||
+      item.emailAddress?.toLowerCase() === process.env.ZOHO_FROM_EMAIL?.toLowerCase()
+    );
+    accountId = entry?.accountId;
+    if (!accountId) throw new Error('Zoho sending account not found');
+  }
+  const data = await zohoRequest(base + '/api/accounts/' + encodeURIComponent(accountId) + '/messages', {
+    method: 'POST',
+    headers: { ...headers, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      fromAddress: process.env.ZOHO_FROM_EMAIL,
+      toAddress: recipient,
+      subject,
+      content,
+      mailFormat: 'plaintext'
+    })
+  });
+  console.info('Zoho HTTPS enquiry notification accepted');
+  return data;
+}
 async function notify(enquiry) {
   const recipient = process.env.NOTIFY_EMAIL;
   const subject = 'New CABO Solutions enquiry';
@@ -26,6 +79,10 @@ ${enquiry.message}`;
   if (!recipient) {
     console.warn('Enquiry notification recipient is not configured');
     return 'not_configured';
+  }
+  if (process.env.ZOHO_CLIENT_ID && process.env.ZOHO_CLIENT_SECRET && process.env.ZOHO_REFRESH_TOKEN && process.env.ZOHO_FROM_EMAIL) {
+    await sendZohoMail(recipient, subject, text);
+    return 'sent';
   }
   // Prefer CABO's existing authenticated Zoho mailbox to avoid requiring a second sending domain.
   if (process.env.SMTP_USER && process.env.SMTP_PASSWORD && process.env.SMTP_HOST) {
