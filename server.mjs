@@ -7,7 +7,7 @@ import nodemailer from 'nodemailer';
 
 const port = Number(process.env.PORT || 3000);
 const dist = resolve('dist');
-const pool = process.env.DATABASE_URL ? new Pool({ connectionString: process.env.DATABASE_URL, ssl: process.env.PGSSLMODE === 'require' ? { rejectUnauthorized: false } : undefined }) : null;
+const pool = process.env.DATABASE_URL ? new Pool({ connectionString: process.env.DATABASE_URL, ssl: process.env.PGSSLMODE === 'require' ? { rejectUnauthorized: true } : undefined }) : null;
 const mime = { '.html':'text/html; charset=utf-8', '.js':'application/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.svg':'image/svg+xml', '.png':'image/png', '.jpg':'image/jpeg', '.webp':'image/webp', '.ico':'image/x-icon', '.woff2':'font/woff2' };
 const json = (res,status,payload) => { res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(payload)); };
 const readJson = async req => { let data=''; for await (const chunk of req) { data+=chunk; if (data.length>12000) throw new Error('Request too large'); } return JSON.parse(data); };
@@ -139,7 +139,8 @@ function encryptToken(value) {
 }
 function decryptToken(value) {
   const [iv, tag, data] = value.split('.').map(part => Buffer.from(part, 'base64'));
-  const cipher = createDecipheriv('aes-256-gcm', tokenKey(), iv);
+  if (iv.length !== 12 || tag.length !== 16) throw new Error('Invalid encrypted token');
+  const cipher = createDecipheriv('aes-256-gcm', tokenKey(), iv, { authTagLength: 16 });
   cipher.setAuthTag(tag);
   return Buffer.concat([cipher.update(data), cipher.final()]).toString('utf8');
 }
