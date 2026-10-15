@@ -32,6 +32,21 @@ const founders = [
     linkedin: 'https://www.linkedin.com/in/bokamoso-molefi-4a1b89239/',
     accentChar: '⟡',
   },
+  {
+    initial: 'IM',
+    portrait: '/images/founders/itumeleng.jpg',
+    name: 'Itumeleng',
+    surname: 'Masuku',
+    pronoun: '',
+    title: 'IT Infrastructure & Technology',
+    heritage: '',
+    bio: 'BSc in IT with 10+ years of experience in systems administration, networking, IT infrastructure, and web development. Passionate about delivering reliable technology solutions, strengthening IT security, and helping businesses improve operational efficiency through technology.',
+    skills: ['IT Infrastructure & Networking', 'Systems Administration', 'Microsoft 365 & Cloud Services', 'IT Security & Governance', 'Web Development', 'IT Operations & Support'],
+    email: '',
+    phone: '',
+    linkedin: '',
+    accentChar: '◈',
+  },
 ];
 
 function useReveal() {
@@ -52,10 +67,10 @@ function useReveal() {
 
 function FounderCard({ founder, index }: { founder: typeof founders[0]; index: number }) {
   const { ref, visible } = useReveal();
-  const shortRole = index === 0 ? 'DATA & TECHNOLOGY' : 'OPERATIONS & GROWTH';
+  const shortRole = index === 0 ? 'DATA & TECHNOLOGY' : index === 1 ? 'OPERATIONS & GROWTH' : 'IT INFRASTRUCTURE & TECHNOLOGY';
   const featuredSkills = index === 0
     ? ['Data Engineering & BI', 'Software Development', 'Automation & Integrations', 'Analytics & AI', 'Data Governance & QA', 'Azure, Fabric & Cloud']
-    : ['Operations & Process', 'Marketing & Social Media', 'PR & Communications', 'Client Success & Delivery', 'Business Development'];
+    : index === 1 ? ['Operations & Process', 'Marketing & Social Media', 'PR & Communications', 'Client Success & Delivery', 'Business Development'] : founder.skills;
   return (
     <article ref={ref} className="cabo-founder-card" style={{
       opacity: visible ? 1 : 0,
@@ -77,9 +92,9 @@ function FounderCard({ founder, index }: { founder: typeof founders[0]; index: n
           {featuredSkills.map(skill => <span key={skill}>{skill}</span>)}
         </div>
         <div className="cabo-founder-contact">
-          <a href={`mailto:${founder.email}`}>✉ {founder.email}</a>
-          <a href={founder.linkedin} target="_blank" rel="noopener noreferrer"><Linkedin size={14} /> LinkedIn</a>
-          <a href={`tel:${founder.phone}`}>✆ {founder.phone}</a>
+          {founder.email && <a href={`mailto:${founder.email}`}>✉ Email {founder.name}</a>}
+          {founder.linkedin && <a href={founder.linkedin} target="_blank" rel="noopener noreferrer"><Linkedin size={14} /> LinkedIn</a>}
+          {founder.phone && <a href={`tel:${founder.phone}`}>✆ {founder.phone}</a>}
         </div>
       </div>
     </article>
@@ -182,14 +197,14 @@ export function Founders() {
             maxWidth: '620px',
             lineHeight: 1.75,
           }}>
-            CABO Solutions was founded by two people who bring complementary expertise and a shared conviction: Africa deserves world-class data intelligence — built by Africans, for every business, in every sector, at every stage.
+            CABO Solutions was founded by three people who bring complementary expertise and a shared conviction: Africa deserves world-class data intelligence — built by Africans, for every business, in every sector, at every stage.
           </p>
         </div>
 
         {/* Cards */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 520px), 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 390px), 1fr))',
           gap: '1.4rem',
         }}>
           {founders.map((f, i) => (
