@@ -28,3 +28,36 @@ jobs:
       - name: Scan JavaScript, TypeScript, and server code
         run: |
           semgrep scan --config p/javascript --config p/typescript --config p/security-audit --error --exclude node_modules --exclude dist --exclude build .
+
+  source-quality:
+    name: TypeScript, ESLint and unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+                - name: Install project dependencies
+        run: npm install --no-package-lock --no-audit --no-fund
+      - name: Lint source
+        run: npm run quality:lint
+      - name: Validate TypeScript
+        run: npm run quality:types
+      - name: Run unit smoke tests
+        run: npm run quality:unit
+  browser:
+    name: Browser smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install project dependencies
+        run: npm install --no-package-lock --no-audit --no-fund
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+      - name: Test homepage in Chromium
+        run: npm run quality:e2e
