@@ -47,6 +47,21 @@ const founders = [
     linkedin: '',
     accentChar: '◈',
   },
+  {
+    initial: 'ZP',
+    portrait: '/images/founders/zoleka.jpg',
+    name: 'Zoleka',
+    surname: 'Phili',
+    pronoun: '',
+    title: 'Business Operations & Strategy',
+    heritage: '',
+    bio: 'BSSc in Business Management graduate from the University of KwaZulu-Natal. Business operations and strategy professional with 3+ years of experience across financial services, healthcare, regulatory compliance and executive operations. Experienced in business process improvement, project coordination, stakeholder management, risk and compliance, and operational strategy.',
+    skills: ['Business Operations & Strategy', 'Business Development & Partnerships', 'Project Management & Coordination', 'Stakeholder & Client Relations', 'Business Analysis & Process Improvement', 'Risk, Compliance & Governance'],
+    email: '',
+    phone: '',
+    linkedin: '',
+    accentChar: '⟡',
+  },
 ];
 
 function useReveal() {
@@ -67,7 +82,7 @@ function useReveal() {
 
 function FounderCard({ founder, index }: { founder: typeof founders[0]; index: number }) {
   const { ref, visible } = useReveal();
-  const shortRole = index === 0 ? 'DATA & TECHNOLOGY' : index === 1 ? 'OPERATIONS & GROWTH' : 'IT INFRASTRUCTURE & TECHNOLOGY';
+  const shortRole = index === 0 ? 'DATA & TECHNOLOGY' : index === 1 ? 'OPERATIONS & GROWTH' : index === 2 ? 'IT INFRASTRUCTURE & TECHNOLOGY' : 'BUSINESS OPERATIONS & STRATEGY';
   const featuredSkills = index === 0
     ? ['Data Engineering & BI', 'Software Development', 'Automation & Integrations', 'Analytics & AI', 'Data Governance & QA', 'Azure, Fabric & Cloud']
     : index === 1 ? ['Operations & Process', 'Marketing & Social Media', 'PR & Communications', 'Client Success & Delivery', 'Business Development'] : founder.skills;
@@ -197,7 +212,7 @@ export function Founders() {
             maxWidth: '620px',
             lineHeight: 1.75,
           }}>
-            CABO Solutions was founded by three people who bring complementary expertise and a shared conviction: Africa deserves world-class data intelligence — built by Africans, for every business, in every sector, at every stage.
+            CABO Solutions was built by a team of people who bring complementary expertise and a shared conviction: Africa deserves world-class data intelligence — built by Africans, for every business, in every sector, at every stage.
           </p>
         </div>
 
