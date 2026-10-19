@@ -34,7 +34,7 @@ const founders = [
   },
   {
     initial: 'IM',
-    portrait: '/images/founders/itumeleng.jpg',
+    portrait: '/images/founders/5327d311-497a-4bc2-bf7d-6cc008f661cf.jpeg',
     name: 'Itumeleng',
     surname: 'Masuku',
     pronoun: '',
@@ -49,7 +49,7 @@ const founders = [
   },
   {
     initial: 'ZP',
-    portrait: '/images/founders/zoleka.jpg',
+    portrait: '/images/founders/272a00ad-a6b7-4080-80bd-0eeff4b65146.jpeg',
     name: 'Zoleka',
     surname: 'Phili',
     pronoun: '',
