@@ -93,7 +93,7 @@ function FounderCard({ founder, index }: { founder: typeof founders[0]; index: n
       transition: 'opacity .7s ease, transform .7s ease',
       transitionDelay: `${index * 120}ms`
     }}>
-      <div className="cabo-founder-photo">
+      <div className={`cabo-founder-photo cabo-founder-photo-${founder.initial.toLowerCase()}`}>
         <img src={founder.portrait} alt={`${founder.name} ${founder.surname}, CABO Solutions co-founder`} loading="lazy" />
         <div className="cabo-founder-photo-shade" aria-hidden="true" />
       </div>
@@ -132,8 +132,9 @@ export function Founders() {
       <style>{`
         .cabo-founder-card{display:grid;grid-template-columns:46% minmax(0,1fr);position:relative;isolation:isolate;min-height:470px;background:#141313;border:1px solid rgba(196,103,58,.26);border-radius:15px;overflow:hidden}
         .cabo-founder-photo{position:relative;min-width:0;overflow:hidden;background:radial-gradient(ellipse at 48% 35%,#bc7049 0%,#764329 38%,#241a18 78%)}
-        .cabo-founder-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:center top;mix-blend-mode:multiply;filter:sepia(.26) saturate(.92) contrast(1.13) brightness(1.16)}
-        .cabo-founder-photo-shade{position:absolute;inset:0;background:radial-gradient(ellipse at 52% 33%,rgba(204,112,62,.10) 0%,rgba(59,28,20,.38) 49%,rgba(16,15,15,.8) 95%),linear-gradient(90deg,rgba(30,16,13,.15) 0%,rgba(20,19,19,.85) 100%),linear-gradient(0deg,#141313 0%,rgba(20,19,19,.45) 24%,transparent 53%);pointer-events:none}
+        .cabo-founder-photo img{display:block;width:100%;height:100%;object-fit:contain;object-position:center center;filter:contrast(1.03) saturate(1.02)}
+        .cabo-founder-photo-shade{position:absolute;inset:0;background:radial-gradient(ellipse at 52% 33%,rgba(204,112,62,.10) 0%,rgba(59,28,20,.10) 49%,rgba(16,15,15,.25) 95%),linear-gradient(90deg,rgba(30,16,13,.15) 0%,rgba(20,19,19,.18) 100%),linear-gradient(0deg,#141313 0%,rgba(20,19,19,.15) 24%,transparent 53%);pointer-events:none}
+        .cabo-founder-photo-zp{background:#25201e}.cabo-founder-photo-im{background:#e9e7e4}.cabo-founder-photo-zp .cabo-founder-photo-shade,.cabo-founder-photo-im .cabo-founder-photo-shade{background:linear-gradient(0deg,rgba(20,19,19,.18),transparent 30%)}
         .cabo-founder-info{position:relative;z-index:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;padding:clamp(1.2rem,2.3vw,2.1rem) clamp(1rem,2.2vw,2rem)}
         .cabo-founder-eyebrow{font:600 .68rem var(--font-mono);letter-spacing:.2em;color:#cb7954}
         .cabo-founder-info h3{font-family:var(--font-display);font-size:clamp(1.45rem,2.3vw,2.4rem);font-weight:500;line-height:1.12;color:var(--cabo-warm-white);margin:.6rem 0 .8rem;overflow-wrap:anywhere}
