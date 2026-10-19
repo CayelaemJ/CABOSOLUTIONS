@@ -131,10 +131,10 @@ export function Founders() {
     >
       <style>{`
         .cabo-founder-card{display:grid;grid-template-columns:46% minmax(0,1fr);position:relative;isolation:isolate;min-height:470px;background:#141313;border:1px solid rgba(196,103,58,.26);border-radius:15px;overflow:hidden}
-        .cabo-founder-photo{position:relative;min-width:0;overflow:hidden;background:radial-gradient(ellipse at 48% 35%,#bc7049 0%,#764329 38%,#241a18 78%)}
-        .cabo-founder-photo img{display:block;width:100%;height:100%;object-fit:contain;object-position:center center;filter:contrast(1.03) saturate(1.02)}
-        .cabo-founder-photo-shade{position:absolute;inset:0;background:radial-gradient(ellipse at 52% 33%,rgba(204,112,62,.10) 0%,rgba(59,28,20,.10) 49%,rgba(16,15,15,.25) 95%),linear-gradient(90deg,rgba(30,16,13,.15) 0%,rgba(20,19,19,.18) 100%),linear-gradient(0deg,#141313 0%,rgba(20,19,19,.15) 24%,transparent 53%);pointer-events:none}
-        .cabo-founder-photo-zp{background:#25201e}.cabo-founder-photo-im{background:#e9e7e4}.cabo-founder-photo-zp .cabo-founder-photo-shade,.cabo-founder-photo-im .cabo-founder-photo-shade{background:linear-gradient(0deg,rgba(20,19,19,.18),transparent 30%)}
+        .cabo-founder-photo{position:relative;min-width:0;overflow:hidden;background:#211b19}
+        .cabo-founder-photo img{display:block;width:100%;height:100%;object-fit:contain;object-position:center center;filter:none}
+        .cabo-founder-photo-shade{position:absolute;inset:0;background:none;pointer-events:none}
+        .cabo-founder-photo-zp{background:#25201e}.cabo-founder-photo-im{background:#e9e7e4}.cabo-founder-photo-zp .cabo-founder-photo-shade,.cabo-founder-photo-im .cabo-founder-photo-shade{background:none}
         .cabo-founder-info{position:relative;z-index:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;padding:clamp(1.2rem,2.3vw,2.1rem) clamp(1rem,2.2vw,2rem)}
         .cabo-founder-eyebrow{font:600 .68rem var(--font-mono);letter-spacing:.2em;color:#cb7954}
         .cabo-founder-info h3{font-family:var(--font-display);font-size:clamp(1.45rem,2.3vw,2.4rem);font-weight:500;line-height:1.12;color:var(--cabo-warm-white);margin:.6rem 0 .8rem;overflow-wrap:anywhere}
@@ -146,7 +146,7 @@ export function Founders() {
         .cabo-founder-contact{display:flex;flex-direction:column;gap:.5rem;margin-top:auto;max-width:100%}
         .cabo-founder-contact a{display:flex;align-items:center;gap:.5rem;color:rgba(245,237,224,.74);font:400 .7rem/1.5 var(--font-body);text-decoration:none;overflow-wrap:anywhere}
         .cabo-founder-contact a:hover{color:#e9a17a}
-        @media(max-width:1100px){.cabo-founder-card{grid-template-columns:1fr;min-height:0}.cabo-founder-photo{height:320px}.cabo-founder-photo-shade{background:radial-gradient(ellipse at 50% 30%,rgba(181,88,45,.08),rgba(21,17,17,.48) 75%),linear-gradient(0deg,#141313 0%,rgba(20,19,19,.8) 18%,transparent 65%),linear-gradient(90deg,rgba(20,19,19,.3),transparent 35%,rgba(20,19,19,.3))}.cabo-founder-info{padding:1.5rem}.cabo-founder-bio{-webkit-line-clamp:unset;display:block}}
+        @media(max-width:1100px){.cabo-founder-card{grid-template-columns:1fr;min-height:0}.cabo-founder-photo{height:320px}.cabo-founder-photo-shade{background:none}.cabo-founder-info{padding:1.5rem}.cabo-founder-bio{-webkit-line-clamp:unset;display:block}}
         @media(max-width:640px){.cabo-founder-photo{height:300px}.cabo-founder-card{border-radius:10px}.cabo-founder-info h3{font-size:1.8rem}}
         @media(prefers-reduced-motion:reduce){.cabo-founder-card{transition:none!important}}
       `}</style>
