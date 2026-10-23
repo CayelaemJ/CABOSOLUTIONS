@@ -4,8 +4,10 @@ import { readFile, stat } from 'node:fs/promises';
 import { resolve, extname, sep } from 'node:path';
 import { Pool } from 'pg';
 import nodemailer from 'nodemailer';
+import { createRequestLimiter } from './security/request-limiter.mjs';
 
 const port = Number(process.env.PORT || 3000);
+const allowRequest = createRequestLimiter();
 const dist = resolve('dist');
 const pool = process.env.DATABASE_URL ? new Pool({ connectionString: process.env.DATABASE_URL, ssl: process.env.PGSSLMODE === 'require' ? { rejectUnauthorized: true } : undefined }) : null;
 const mime = { '.html':'text/html; charset=utf-8', '.js':'application/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.svg':'image/svg+xml', '.png':'image/png', '.jpg':'image/jpeg', '.webp':'image/webp', '.ico':'image/x-icon', '.woff2':'font/woff2' };
@@ -195,6 +197,15 @@ async function handleZohoSetup(req, res) {
 const setupPage = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CABO Zoho Setup</title><style>body{font:16px system-ui;background:#101316;color:#f5f2ed;max-width:480px;margin:12vh auto;padding:22px}input,button{box-sizing:border-box;display:block;width:100%;padding:15px;margin:12px 0;border-radius:8px;border:1px solid #888;background:#24292e;color:white}button{background:#a96b4a;border:0;font-weight:bold}p{line-height:1.5}</style><h1>CABO Zoho setup</h1><p>Generate a fresh code in Zoho Self Client with the ZohoMail.messages.CREATE and ZohoMail.accounts.READ scopes, then paste it below. The code is exchanged privately and the refresh token is encrypted in PostgreSQL.</p><form id="f"><label>Setup password<input type="password" name="password" required autocomplete="off"></label><label>Fresh authorisation code<input type="text" name="code" required autocomplete="off"></label><button>Connect Zoho</button></form><p id="msg" role="status"></p><script>document.getElementById('f').onsubmit=async e=>{e.preventDefault();const f=e.target,b=f.querySelector('button');b.disabled=true;document.getElementById('msg').textContent='Connecting…';try{const r=await fetch('/api/zoho/setup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(f)))});const d=await r.json();document.getElementById('msg').textContent=r.ok?'Zoho connected. You may close this page.':(d.error||'Setup failed');if(r.ok)f.reset()}catch{document.getElementById('msg').textContent='Network error'}finally{b.disabled=false}}</script></html>`;
 
 async function api(req,res,path) {
+  // Shared general budget, plus independent expensive and credential/form budgets.
+  // Exempt health probes from throttling so health monitoring cannot trigger an outage.
+  if (path !== '/api/health') {
+    const accepted = allowRequest(req,res,'api',240,60_000) &&
+      (path === '/api/enquiries' ? allowRequest(req,res,'public-form',6,10*60_000) : true) &&
+      (path === '/api/zoho/setup' ? allowRequest(req,res,'zoho-setup',6,15*60_000) : true) &&
+      (path.startsWith('/api/admin/') ? allowRequest(req,res,'admin-api',60,60_000) : true);
+    if (!accepted) return json(res,429,{error:'Too many requests. Please retry later.'});
+  }
   if (path==='/api/zoho/setup' && req.method==='POST') return handleZohoSetup(req,res);
   if (path==='/api/health' && req.method==='GET') return json(res,200,{status:'ok',databaseConfigured:!!pool});
   if (path==='/api/enquiries' && req.method==='POST') {
