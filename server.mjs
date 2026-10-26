@@ -5,6 +5,7 @@ import { resolve, extname, sep } from 'node:path';
 import { Pool } from 'pg';
 import nodemailer from 'nodemailer';
 import { createRequestLimiter } from './security/request-limiter.mjs';
+import {readBoundedJson} from './security/request-body.mjs';
 import {matchesAdminBearer} from './security/admin-auth.mjs';
 
 const port = Number(process.env.PORT || 3000);
@@ -13,7 +14,7 @@ const dist = resolve('dist');
 const pool = process.env.DATABASE_URL ? new Pool({ connectionString: process.env.DATABASE_URL, ssl: process.env.PGSSLMODE === 'require' ? { rejectUnauthorized: true } : undefined }) : null;
 const mime = { '.html':'text/html; charset=utf-8', '.js':'application/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.svg':'image/svg+xml', '.png':'image/png', '.jpg':'image/jpeg', '.webp':'image/webp', '.ico':'image/x-icon', '.woff2':'font/woff2' };
 const json = (res,status,payload) => { res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(payload)); };
-const readJson = async req => { let data=''; for await (const chunk of req) { data+=chunk; if (data.length>12000) throw new Error('Request too large'); } return JSON.parse(data); };
+const readJson = req => readBoundedJson(req);
 const schema = `CREATE TABLE IF NOT EXISTS cabo_enquiries (id BIGSERIAL PRIMARY KEY, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), name TEXT NOT NULL, email TEXT NOT NULL, organisation TEXT, service TEXT NOT NULL, message TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'new', updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
 let ready = null;
 async function db() { if (!pool) throw new Error('DATABASE_URL is not configured'); if (!ready) ready=pool.query(schema).catch(e=>{ready=null;throw e}); await ready; return pool; }
