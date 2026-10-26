@@ -152,21 +152,19 @@ async function savedZohoRefreshToken() {
   const result = await connection.query("SELECT token_encrypted FROM cabo_oauth_tokens WHERE provider='zoho' LIMIT 1");
   return result.rows.length ? decryptToken(result.rows[0].token_encrypted) : null;
 }
-let setupAttempts = [];
+// The per-peer zoho-setup limiter in api() governs attempts without allowing
+// one unauthenticated visitor to globally lock out all administrators.
 async function handleZohoSetup(req, res) {
-  const now = Date.now();
-  setupAttempts = setupAttempts.filter(time => now - time < 15 * 60 * 1000);
-  if (setupAttempts.length >= 5) return json(res,429,{error:'Too many attempts. Please retry later.'});
+  if (process.env.ZOHO_SETUP_ENABLED !== 'true') return json(res,403,{error:'Setup disabled'});
   let payload;
   try { payload = await readJson(req); } catch { return json(res,400,{error:'Invalid request'}); }
   const expected = process.env.ZOHO_SETUP_PASSWORD || '';
   const actual = typeof payload?.password === 'string' ? payload.password : '';
   const a = Buffer.from(expected); const b = Buffer.from(actual);
   if (!expected || a.length !== b.length || !timingSafeEqual(a,b)) {
-    setupAttempts.push(now);
     return json(res,401,{error:'Invalid setup password'});
   }
-  if (!process.env.ZOHO_SETUP_ENABLED || process.env.ZOHO_SETUP_ENABLED !== 'true') return json(res,403,{error:'Setup disabled'});
+
   if (!/^[a-zA-Z0-9._-]{15,250}$/.test(payload?.code || '')) return json(res,422,{error:'Invalid authorisation code'});
   try {
     const body = new URLSearchParams({
