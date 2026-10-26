@@ -1,3 +1,4 @@
+import {isIP} from 'node:net';
 // In-process safety net. Enforce additional distributed/edge limits for multi-instance production.
 export function createRequestLimiter({ now = Date.now, maxKeys = 50000 } = {}) {
   const buckets = new Map();
@@ -5,8 +6,11 @@ export function createRequestLimiter({ now = Date.now, maxKeys = 50000 } = {}) {
     const at = now();
     const peer = String(req.socket?.remoteAddress || 'unknown');
     // Only trust forwarded IPs when the deployment's reverse proxy is verified to overwrite them.
-    const forwarded = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
-    const ip = process.env.TRUST_PROXY_HOPS === '1' && forwarded ? forwarded : peer;
+    const forwarded = req.headers['x-forwarded-for'];
+    const chain = typeof forwarded === 'string' ? forwarded.split(',').map(x=>x.trim()).filter(Boolean) : [];
+    // Trust only the nearest proxy-appended address; ignore caller-controlled leftmost hops.
+    const candidate = chain.at(-1);
+    const ip = process.env.TRUST_PROXY_HOPS === '1' && candidate && isIP(candidate) ? candidate : peer;
     const key = scope + ':' + ip;
     let entry = buckets.get(key);
     if (!entry || entry.resetAt <= at) {
