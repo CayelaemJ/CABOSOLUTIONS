@@ -5,6 +5,7 @@ import { resolve, extname, sep } from 'node:path';
 import { Pool } from 'pg';
 import nodemailer from 'nodemailer';
 import { createRequestLimiter } from './security/request-limiter.mjs';
+import {matchesAdminBearer} from './security/admin-auth.mjs';
 
 const port = Number(process.env.PORT || 3000);
 const allowRequest = createRequestLimiter();
@@ -221,14 +222,12 @@ async function api(req,res,path) {
     } catch(err) {console.error('Enquiry storage unavailable:',err.message);return json(res,503,{error:'Unable to save enquiry at present. Please contact us by email.'});}
   }
   if(path==='/api/admin/enquiries' && req.method==='GET') {
-    const token=req.headers.authorization?.replace(/^Bearer /,'');
-    if(!process.env.ADMIN_API_TOKEN || token!==process.env.ADMIN_API_TOKEN) return json(res,401,{error:'Unauthorized'});
+    if(!matchesAdminBearer(req.headers.authorization,process.env.ADMIN_API_TOKEN)) return json(res,401,{error:'Unauthorized'});
     try {const result=await (await db()).query('SELECT id,created_at,name,email,organisation,service,message,status,updated_at FROM cabo_enquiries ORDER BY created_at DESC LIMIT 200');return json(res,200,{enquiries:result.rows});}
     catch {return json(res,503,{error:'Enquiry database unavailable'});}
   }
   if(path.startsWith('/api/admin/enquiries/') && req.method==='PATCH') {
-    const token=req.headers.authorization?.replace(/^Bearer /,'');
-    if(!process.env.ADMIN_API_TOKEN || token!==process.env.ADMIN_API_TOKEN) return json(res,401,{error:'Unauthorized'});
+    if(!matchesAdminBearer(req.headers.authorization,process.env.ADMIN_API_TOKEN)) return json(res,401,{error:'Unauthorized'});
     const id=path.split('/').pop();
     let body;try{body=await readJson(req);}catch{return json(res,400,{error:'Invalid request'});}
     if(!/^\d+$/.test(id)||!['new','contacted','in_progress','closed'].includes(body?.status))return json(res,422,{error:'Invalid status'});
