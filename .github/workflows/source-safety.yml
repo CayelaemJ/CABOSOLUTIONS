@@ -41,7 +41,7 @@ jobs:
       - name: Install project dependencies
         run: npm install --no-package-lock --no-audit --no-fund
       - name: Verify API rate-limiter regression
-        run: node --test security/request-limiter.test.mjs
+        run: node --test security/request-limiter.test.mjs security/admin-auth.test.mjs
       - name: Lint source
         run: npm run quality:lint
       - name: Validate TypeScript
