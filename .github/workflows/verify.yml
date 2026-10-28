@@ -18,6 +18,9 @@ jobs:
       - run: npm run check
       - run: npm run build
       - run: node scripts/cloudflare/make-edge-asset-bundle.mjs
+      - run: node scripts/cloudflare/build-site-worker.mjs
+      - run: node --check cloudflare-output/cabo-site.worker.js
+      - run: node --test tests/cloudflare-built-worker.test.mjs
       - name: Archive verified CABO Cloudflare Pages static bundle
         if: github.head_ref == 'chore/cloudflare-pages-stage-20261028' || github.ref_name == 'chore/cloudflare-pages-stage-20261028'
         uses: actions/upload-artifact@v4
