@@ -99,3 +99,20 @@ No application domains or DNS were switched. Treat it as a temporary
 compatibility trial; once the Cloudflare Git integration is authorized,
 deploy the actual Vite-built `dist` assets onto Pages and migrate
 the enquiry backend in a separate, data-preserving step.
+
+## Follow-up smoke checks — October 28, 2026
+
+GitHub Actions verification workflow run
+`https://github.com/CayelaemJ/CABOSOLUTIONS/actions/runs/40699318126`
+independently retrieved the Cloudflare preview over HTTPS, confirmed HTTP 200
+and the CABO Solutions HTML, and passed its Worker/Pages unit tests and Vite
+build. This replaces the earlier uncertainty about the **public homepage HTTP**
+availability; only frontend rendering and API persistence remained untested.
+
+Desktop/mobile Chromium checks were then added in
+`cloudflare/tests/edge-preview.browser.spec.mjs`, with a dedicated remote
+Playwright configuration. They are gated to this migration PR's branch and
+do not submit real enquiries. Their outcome is not claimed until CI finishes.
+
+This does not change the Pages GitHub authorization blocker or constitute
+complete backend/data migration.
