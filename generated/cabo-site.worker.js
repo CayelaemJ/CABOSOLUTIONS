@@ -27,12 +27,9 @@ async function assetResponse(request, path) {
    'Cache-Control':path==='/index.html'?'public, max-age=60':path.startsWith('/assets/')?'public, max-age=31536000, immutable':'public, max-age=86400',
    'Vary':'Accept-Encoding'
  };
+ // Only give Cloudflare uncompressed bytes. Returning pre-gzipped bytes
+ // causes double-gzip over workers.dev and breaks browser/CLI HTML rendering.
  const bytes=decode(asset.gzipBase64);
- if(request.headers.get('accept-encoding')?.includes('gzip')){
-   headers['Content-Encoding']='gzip';
-   return new Response(request.method==='HEAD'?null:bytes,{headers});
- }
- // Gracefully serve uncommon clients which don't accept gzip.
  const decompressed=new Response(bytes).body.pipeThrough(new DecompressionStream('gzip'));
  return new Response(request.method==='HEAD'?null:decompressed,{headers});
 }
