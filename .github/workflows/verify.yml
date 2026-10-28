@@ -14,5 +14,6 @@ jobs:
           node-version: '22'
       - run: npm install --no-audit --no-fund
       - run: node --test security/admin-auth.test.mjs security/request-limiter.test.mjs security/request-body.test.mjs security/mail-transport.test.mjs
+      - run: node --test tests/cloudflare-pages-proxy.test.mjs
       - run: npm run check
       - run: npm run build
