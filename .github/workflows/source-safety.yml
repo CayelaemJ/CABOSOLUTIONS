@@ -63,3 +63,6 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Test homepage in Chromium
         run: npm run quality:e2e
+      - name: Test deployed Cloudflare preview on desktop and mobile
+        if: github.head_ref == 'chore/cloudflare-pages-stage-20261028'
+        run: npx playwright test --config=playwright.cloudflare.config.mjs
