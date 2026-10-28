@@ -40,6 +40,19 @@ jobs:
           icon="$(curl -fsSL "$url/static/the-fixer-icon.svg")"
           test -n "$icon"
           echo "NewChanges staging website served, all tested account/data routes blocked."
+          api="https://newchanges-api-canary.cabo-solutions-za.workers.dev"
+          curl -fsSL --max-time 35 -D /tmp/nc-api-headers "$api/api/health" -o /tmp/nc-api-health.json
+          node -e 'const h=require("/tmp/nc-api-health.json");if(h.status!=="ok"||h.production!==false||h.environment!=="cloudflare-isolated-canary")process.exit(1)'
+          curl -fsSL --max-time 35 "$api/api/migration/capabilities" -o /tmp/nc-capabilities.json
+          node -e 'const c=require("/tmp/nc-capabilities.json");for(const k of ["auth","dashboard","imports","schedulers","notifications"])if(c[k]!=="disabled")process.exit(1);if(c.database!=="disconnected"||c.production_render!=="unchanged")process.exit(1)'
+          for route in "/api/auth/me" "/api/dashboard" "/api/admin/users" "/api/source/sync"; do
+            code="$(curl -sS -o /dev/null -w '%{http_code}' "$api$route")"
+            test "$code" = 404
+          done
+          code="$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$api/api/health")"
+          test "$code" = 405
+          echo "Cloudflare isolated API canary tested with no live data access."
+
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
