@@ -5,13 +5,13 @@ name: Deploy CABO Solutions to Cloudflare Pages (Direct Upload)
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, chore/cloudflare-pages-stage-20261028]
 
 permissions:
   contents: read
 
 concurrency:
-  group: cabo-cloudflare-pages-main
+  group: cabo-cloudflare-pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -39,14 +39,27 @@ jobs:
           name: cabo-solutions-static-build
           path: dist/
           retention-days: 7
+      - name: Check whether an upload token is configured without exposing it
+        id: token-status
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -n "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Deploy to Cloudflare Pages via Direct Upload (no GitHub App)
-        if: ${{ env.CLOUDFLARE_API_TOKEN != '' }}
+        if: ${{ github.ref == 'refs/heads/main' && steps.token-status.outputs.available == 'true' }}
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: 46ab7ae69c9bc2b2fe4595a6abbbe59c
         run: npx --yes wrangler@4 pages deploy dist --project-name=cabo-solutions-static --branch=main
       - name: Explain skipped deployment
-        if: ${{ env.CLOUDFLARE_API_TOKEN == '' }}
+        if: ${{ steps.token-status.outputs.available != 'true' }}
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: echo "Static build passed, but Cloudflare deployment is intentionally skipped until CLOUDFLARE_API_TOKEN is stored in GitHub Actions secrets."
+        run: echo "Build and artifact passed. Cloudflare Direct Upload requires CLOUDFLARE_API_TOKEN in GitHub Actions secrets."
+      - name: Confirm staging branch cannot publish automatically
+        if: ${{ github.ref != 'refs/heads/main' }}
+        run: echo "Staging build verified; no cloud deployment attempted on this branch."
