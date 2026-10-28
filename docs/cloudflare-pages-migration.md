@@ -116,3 +116,36 @@ do not submit real enquiries. Their outcome is not claimed until CI finishes.
 
 This does not change the Pages GitHub authorization blocker or constitute
 complete backend/data migration.
+
+## Primary migration path changed: Direct Upload (28 October 2026)
+
+**Do not spend more time repairing the Cloudflare GitHub App.** Cloudflare
+already accepted an API-created, standalone **Direct Upload** Pages project:
+`cabo-solutions-static` (future `cabo-solutions-static.pages.dev`).
+
+The repository's `.github/workflows/cloudflare-pages-direct-upload.yml`
+now builds the real Vite `dist` and saves a downloadable artifact; once a
+`CLOUDFLARE_API_TOKEN` GitHub Actions repository secret with **Account >
+Cloudflare Pages > Edit** permission is configured, Wrangler can publish the
+same artifact automatically on `main` pushes without linking GitHub to
+Cloudflare's Git integration. The account ID is a public configuration ID
+and is already committed to the workflow, not a secret.
+
+**Important:** At the last API inventory, the Pages project was created but
+had no successful deployment. Its `*.pages.dev` hostname is not verified
+as an actual running website. The edge Worker remains the only live CABO
+Solutions Cloudflare preview. The enquiry API still uses Render.
+
+One-time user-side credential setup is needed:
+1. Cloudflare dashboard → My Profile → API Tokens → Create Token.
+2. Grant least-privilege Cloudflare Pages Edit for only this account.
+3. GitHub repo → Settings → Secrets and variables → Actions → New repository
+   secret: `CLOUDFLARE_API_TOKEN`. Never paste the token into chat, commits
+   or build logs.
+4. Run the workflow from the main branch (after PR approval and merge).
+
+This workaround is fully separate from the Cloudflare Workers and Pages
+GitHub *App installation* that was returning error 8000011.
+
+Note: A Direct Upload Pages project cannot later be switched into a
+Git-integrated Pages project. That is intentional under this workaround.
