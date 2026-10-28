@@ -1,0 +1,52 @@
+name: Deploy CABO Solutions to Cloudflare Pages (Direct Upload)
+
+# This workflow bypasses the Cloudflare <-> GitHub App installation entirely.
+# Cloudflare's API token is a GitHub Actions secret; never commit it.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cabo-cloudflare-pages-main
+  cancel-in-progress: true
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Check server and Cloudflare compatibility
+        run: |
+          npm run check
+          node --test tests/cloudflare-pages-proxy.test.mjs tests/cloudflare-edge-preview.test.mjs
+      - name: Build static Vite assets
+        run: |
+          npm run build
+          test -s dist/index.html
+      - name: Save deployable assets even if Cloudflare credentials are missing
+        uses: actions/upload-artifact@v4
+        with:
+          name: cabo-solutions-static-build
+          path: dist/
+          retention-days: 7
+      - name: Deploy to Cloudflare Pages via Direct Upload (no GitHub App)
+        if: ${{ env.CLOUDFLARE_API_TOKEN != '' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: 46ab7ae69c9bc2b2fe4595a6abbbe59c
+        run: npx --yes wrangler@4 pages deploy dist --project-name=cabo-solutions-static --branch=main
+      - name: Explain skipped deployment
+        if: ${{ env.CLOUDFLARE_API_TOKEN == '' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: echo "Static build passed, but Cloudflare deployment is intentionally skipped until CLOUDFLARE_API_TOKEN is stored in GitHub Actions secrets."
