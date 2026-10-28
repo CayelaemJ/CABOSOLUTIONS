@@ -17,3 +17,10 @@ jobs:
       - run: node --test tests/cloudflare-pages-proxy.test.mjs tests/cloudflare-edge-preview.test.mjs
       - run: npm run check
       - run: npm run build
+      - name: Verify deployed Cloudflare edge preview (staging branch only)
+        if: github.head_ref == 'chore/cloudflare-pages-stage-20261028' || github.ref_name == 'chore/cloudflare-pages-stage-20261028'
+        run: |
+          set -eu
+          curl --retry 1 --retry-delay 3 --retry-all-errors --max-time 115 -fsSL "https://cabo-solutions-edge-preview.cabo-solutions-za.workers.dev/" -o /tmp/cabo-cloudflare-preview.html
+          grep -q "CABO Solutions" /tmp/cabo-cloudflare-preview.html
+          echo "Live Cloudflare edge preview returned CABO Solutions HTML."
