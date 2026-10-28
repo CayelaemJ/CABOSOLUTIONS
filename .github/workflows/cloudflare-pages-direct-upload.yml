@@ -63,3 +63,44 @@ jobs:
       - name: Confirm staging branch cannot publish automatically
         if: ${{ github.ref != 'refs/heads/main' }}
         run: echo "Staging build verified; no cloud deployment attempted on this branch."
+
+  publish-assets-for-verified-worker:
+    # This job runs only from reviewed MAIN commits, never from pull-request code.
+    # It uses the GitHub token only to commit public Vite output to an isolated
+    # artifact branch; NO Cloudflare credentials or app secrets are needed.
+    if: github.ref == 'refs/heads/main'
+    needs: build-and-upload
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          name: cabo-solutions-static-build
+          path: dist
+      - name: Generate public-only gzip asset bundle
+        run: |
+          node scripts/cloudflare/make-edge-asset-bundle.mjs
+          test -s cloudflare-output/site-assets.json
+          cp cloudflare-output/site-assets.json /tmp/cabo-site-assets.json
+      - name: Publish browser assets to isolated GitHub artifact branch
+        run: |
+          set -euo pipefail
+          git config user.name 'CABO Cloudflare CI'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch origin refs/heads/cf-cabo-build-artifacts:refs/remotes/origin/cf-cabo-build-artifacts --depth=1
+          git checkout -B cf-cabo-build-artifacts refs/remotes/origin/cf-cabo-build-artifacts
+          mkdir -p generated
+          cp /tmp/cabo-site-assets.json generated/cabo-site-assets.json
+          git add generated/cabo-site-assets.json
+          if git diff --cached --quiet; then
+            echo 'No change to browser assets'
+          else
+            git commit -m "build(cloudflare): verified static site bundle from ${{ github.sha }}"
+            git push origin HEAD:refs/heads/cf-cabo-build-artifacts
+          fi
