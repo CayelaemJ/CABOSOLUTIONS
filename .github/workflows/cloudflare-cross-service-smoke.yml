@@ -23,3 +23,20 @@ jobs:
           status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 "$base/api/admin")"
           test "$status" = 404
           echo "OmniMaster public HTML, nonce CSP, noindex and blocked admin route verified."
+
+      - name: Test read-only CABO Artist Hub Cloudflare preview
+        run: |
+          set -euo pipefail
+          base="https://cabo-artist-static-preview.cabo-solutions-za.workers.dev"
+          curl --fail --retry 2 --retry-delay 4 --retry-all-errors --max-time 45 -sS -D /tmp/artist-headers "$base/" -o /tmp/artist-home
+          grep -qi 'CABO Artist Hub' /tmp/artist-home
+          grep -qi 'fictional artists and synthetic insights' /tmp/artist-home
+          grep -qi '^x-robots-tag: noindex' /tmp/artist-headers
+          curl --fail -sS --max-time 25 "$base/app.js" | grep -q 'staticDemoArtists'
+          curl --fail -sS --max-time 25 "$base/styles.css" > /tmp/artist-style.css
+          test -s /tmp/artist-style.css
+          status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 "$base/api/artists")"
+          test "$status" = 503
+          status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 -X POST "$base/api/bookings")"
+          test "$status" = 405
+          echo "Artist public static assets and blocked live booking API verified."
