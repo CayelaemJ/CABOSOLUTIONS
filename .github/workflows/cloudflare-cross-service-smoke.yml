@@ -1,0 +1,25 @@
+name: Cloudflare cross-service staging smoke
+on:
+  push:
+    branches: [chore/cloudflare-pages-stage-20261028]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  edge-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Test OmniMaster Cloudflare Worker is self-contained
+        run: |
+          set -euo pipefail
+          base="https://omnimaster-cloudflare-preview.cabo-solutions-za.workers.dev"
+          curl --fail --retry 2 --retry-all-errors --retry-delay 5 --max-time 45 -sS -D /tmp/omni-headers "$base/" -o /tmp/omni-home
+          grep -qi 'omnimaster' /tmp/omni-home
+          grep -qi 'CABO Learning Hub' /tmp/omni-home
+          grep -qi '^content-security-policy:' /tmp/omni-headers
+          grep -qi '^x-robots-tag: noindex' /tmp/omni-headers
+          curl --fail -sS --max-time 25 "$base/robots.txt" | grep -q 'Disallow: /'
+          status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 "$base/api/admin")"
+          test "$status" = 404
+          echo "OmniMaster public HTML, nonce CSP, noindex and blocked admin route verified."
