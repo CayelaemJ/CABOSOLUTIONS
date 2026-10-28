@@ -1,0 +1,45 @@
+name: Verify standalone CABO Cloudflare site (real deployed Worker)
+on:
+  push:
+    branches: [test/cloudflare-standalone-browser-20261028]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  standalone:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify root HTML, static JS, CSS, image and protected routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://cabo-solutions-static-preview.cabo-solutions-za.workers.dev"
+          curl --fail --retry 2 --retry-delay 4 --retry-all-errors --max-time 65 -sS --compressed -D /tmp/cabo-static.headers "$base/" -o /tmp/cabo-static.index.html
+          grep -q 'CABO Solutions' /tmp/cabo-static.index.html
+          grep -qi '^x-robots-tag: noindex' /tmp/cabo-static.headers
+          script_path="$(grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' /tmp/cabo-static.index.html | head -n 1)"
+          css_path="$(grep -oE '/assets/index-[A-Za-z0-9_-]+\.css' /tmp/cabo-static.index.html | head -n 1)"
+          test -n "$script_path"
+          test -n "$css_path"
+          curl -fsSL --compressed --max-time 65 "$base$script_path" -o /tmp/cabo-static.js
+          curl -fsSL --compressed --max-time 65 "$base$css_path" -o /tmp/cabo-static.css
+          test "$(wc -c < /tmp/cabo-static.js)" -gt 100000
+          test "$(wc -c < /tmp/cabo-static.css)" -gt 10000
+          curl -fsSL --compressed --max-time 65 "$base/images/founders/cayelaem.jpg" -o /tmp/cabo-static.jpg
+          test "$(wc -c < /tmp/cabo-static.jpg)" -gt 20000
+          status="$(curl -sS --compressed -o /dev/null -w '%{http_code}' "$base/api/admin/enquiries")"
+          test "$status" = 404
+          status="$(curl -sS --compressed -o /dev/null -w '%{http_code}' "$base/zoho-setup")"
+          test "$status" = 404
+          echo "Full site static assets and blocked private routes verified without Render asset fetches."
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Test deployed site on desktop and mobile Chromium
+        env:
+          CABO_CF_PREVIEW_URL: https://cabo-solutions-static-preview.cabo-solutions-za.workers.dev
+        run: npx playwright test --config=playwright.cloudflare.config.mjs
