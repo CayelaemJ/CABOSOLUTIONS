@@ -17,6 +17,12 @@ jobs:
           set -euo pipefail
           base="https://cabo-solutions-static-preview.cabo-solutions-za.workers.dev"
           curl --fail --retry 2 --retry-delay 4 --retry-all-errors --max-time 65 -sS --compressed -D /tmp/cabo-static.headers "$base/" -o /tmp/cabo-static.index.html
+          echo "Live status and selected response headers:"
+          sed -n '1,18p' /tmp/cabo-static.headers
+          echo "HTML bytes: $(wc -c < /tmp/cabo-static.index.html)"
+          echo "HTML preview (public page only):"
+          head -c 400 /tmp/cabo-static.index.html || true
+          echo ""
           grep -q 'CABO Solutions' /tmp/cabo-static.index.html
           grep -qi '^x-robots-tag: noindex' /tmp/cabo-static.headers
           script_path="$(grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' /tmp/cabo-static.index.html | head -n 1)"
