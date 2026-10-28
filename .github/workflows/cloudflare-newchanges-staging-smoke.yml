@@ -1,0 +1,43 @@
+name: Verify NewChanges isolated Cloudflare staging (no production data)
+on:
+  push:
+    branches: [test/newchanges-cloudflare-staging-20261028]
+permissions:
+  contents: read
+jobs:
+  edge-readonly-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Validate actual preview HTML and public brand assets over HTTPS
+        run: |
+          set -euo pipefail
+          url="https://newchanges-cloudflare-preview.cabo-solutions-za.workers.dev"
+          curl -fsSL --retry 2 --retry-delay 3 --retry-all-errors --max-time 50 -D /tmp/nc-headers "$url/" -o /tmp/nc-home
+          grep -qi 'The Fixer' /tmp/nc-home
+          grep -qi 'Cloudflare staging preview' /tmp/nc-home
+          grep -qi '^x-robots-tag: noindex' /tmp/nc-headers
+          grep -qi '^content-security-policy:' /tmp/nc-headers
+          curl -fsSL --max-time 25 "$url/static/the-fixer-brand.css" -o /tmp/nc-brand.css
+          grep -q '\-\-brand-primary' /tmp/nc-brand.css
+          curl -fsSL --max-time 25 "$url/static/the-fixer-logo-reversed.svg" -o /tmp/nc-logo.svg
+          test -s /tmp/nc-logo.svg
+          status="$(curl -sS -o /dev/null -w '%{http_code}' "$url/login")"
+          test "$status" = 403
+          status="$(curl -sS -o /dev/null -w '%{http_code}' "$url/dashboard")"
+          test "$status" = 403
+          status="$(curl -sS -o /dev/null -w '%{http_code}' "$url/react/")"
+          test "$status" = 403
+          status="$(curl -sS -o /dev/null -w '%{http_code}' "$url/api/auth/me")"
+          test "$status" = 404
+          status="$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$url/api/auth/login")"
+          test "$status" = 404
+          echo "NewChanges staging website served, all tested account/data routes blocked."
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Chromium desktop/mobile public preview check
+        run: npx playwright test cloudflare/tests/newchanges-staging.browser.spec.mjs --config=playwright.cloudflare.config.mjs
