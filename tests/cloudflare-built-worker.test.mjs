@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import fs from 'node:fs';
-import { gunzipSync } from 'node:zlib';
 
 const worker = (await import('../cloudflare-output/cabo-site.worker.js')).default;
 const assets = JSON.parse(fs.readFileSync('cloudflare-output/site-assets.json', 'utf8')).assets;
@@ -13,16 +12,17 @@ test('root is genuine Vite-built HTML, no Render fetch, and no public indexing',
   try {
     const r=await worker.fetch(new Request(url('/'), {headers:{'Accept-Encoding':'gzip'}}));
     assert.equal(r.status,200);
-    assert.equal(r.headers.get('content-encoding'),'gzip');
+    assert.equal(r.headers.get('content-encoding'),null);
     assert.match(r.headers.get('x-robots-tag'),/noindex/);
-    const html=gunzipSync(Buffer.from(await r.arrayBuffer())).toString('utf8');
+    const html=await r.text();
     assert.match(html,/CABO Solutions/);
     assert.match(html,/\/assets\/index-/);
     const script=Object.keys(assets).find(x=>x.endsWith('.js'));
     const s=await worker.fetch(new Request(url(script), {headers:{'Accept-Encoding':'gzip'}}));
     assert.equal(s.status,200);
     assert.match(s.headers.get('content-type'),/javascript/);
-    assert.ok(gunzipSync(Buffer.from(await s.arrayBuffer())).length>10000);
+    assert.equal(s.headers.get('content-encoding'),null);
+    assert.ok((await s.text()).length>10000);
   } finally {globalThis.fetch=old;}
 });
 
