@@ -66,3 +66,8 @@ jobs:
       - name: Test deployed Cloudflare preview on desktop and mobile
         if: github.head_ref == 'chore/cloudflare-pages-stage-20261028'
         run: npx playwright test --config=playwright.cloudflare.config.mjs
+      - name: Test standalone compiled Cloudflare Worker on desktop and mobile
+        if: github.head_ref == 'test/cloudflare-standalone-browser-20261028'
+        env:
+          CABO_CF_PREVIEW_URL: https://cabo-solutions-static-preview.cabo-solutions-za.workers.dev
+        run: npx playwright test --config=playwright.cloudflare.config.mjs
