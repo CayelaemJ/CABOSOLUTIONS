@@ -32,11 +32,12 @@ test('site response has anonymous-only caching and does not forward cookies', as
     async put(request, response) { saved.set(request.url, response.clone()); },
   }};
   let calls = 0;
-  globalThis.fetch = async request => {
+  globalThis.fetch = async (input, init) => {
     calls++;
-    assert.equal(new URL(request.url).hostname, 'cabo-solutions-site.onrender.com');
-    assert.equal(request.headers.get('cookie'), null);
-    assert.equal(request.headers.get('authorization'), null);
+    assert.equal(new URL(input instanceof Request ? input.url : String(input)).hostname, 'cabo-solutions-site.onrender.com');
+    const forwarded = input instanceof Request ? input.headers : new Headers(init?.headers);
+    assert.equal(forwarded.get('cookie'), null);
+    assert.equal(forwarded.get('authorization'), null);
     return new Response('<!doctype html><title>CABO</title>', {
       status: 200,
       headers: { 'Content-Type': 'text/html; charset=utf-8', 'Set-Cookie': 'secret=never' },
@@ -65,10 +66,10 @@ test('site response has anonymous-only caching and does not forward cookies', as
 test('public enquiry POST is forwarded uncached and retains backend response status', async () => {
   const old = globalThis.fetch;
   let destination, headers, body;
-  globalThis.fetch = async request => {
-    destination = request.url;
-    headers = request.headers;
-    body = await request.text();
+  globalThis.fetch = async (input, init) => {
+    destination = input instanceof Request ? input.url : String(input);
+    headers = input instanceof Request ? input.headers : new Headers(init?.headers);
+    body = input instanceof Request ? await input.text() : new TextDecoder().decode(init?.body);
     return Response.json({ received: true, reference: 'synthetic' }, { status: 201 });
   };
   try {
