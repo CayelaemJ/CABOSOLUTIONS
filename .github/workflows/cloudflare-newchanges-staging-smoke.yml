@@ -32,6 +32,13 @@ jobs:
           test "$status" = 404
           status="$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$url/api/auth/login")"
           test "$status" = 404
+          manifest_status="$(curl -sS -o /tmp/nc-manifest -w '%{http_code}' "$url/static/site.webmanifest")"
+          test "$manifest_status" = 200
+          grep -q 'The Fixer' /tmp/nc-manifest
+          icon_status="$(curl -sS -o /dev/null -w '%{http_code}' "$url/static/favicon-32.png")"
+          test "$icon_status" = 302
+          icon="$(curl -fsSL "$url/static/the-fixer-icon.svg")"
+          test -n "$icon"
           echo "NewChanges staging website served, all tested account/data routes blocked."
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
