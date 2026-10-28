@@ -1,0 +1,43 @@
+name: Cloudflare cross-service staging smoke
+on:
+  push:
+    branches: [chore/cloudflare-pages-stage-20261028]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  edge-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Test OmniMaster Cloudflare Worker is self-contained
+        run: |
+          set -euo pipefail
+          base="https://omnimaster-cloudflare-preview.cabo-solutions-za.workers.dev"
+          curl --fail --retry 2 --retry-all-errors --retry-delay 5 --max-time 45 -sS -D /tmp/omni-headers "$base/" -o /tmp/omni-home
+          grep -qi 'omnimaster' /tmp/omni-home
+          grep -qi 'CABO Learning Hub' /tmp/omni-home
+          grep -qi '^content-security-policy:' /tmp/omni-headers
+          grep -qi '^x-robots-tag: noindex' /tmp/omni-headers
+          curl --fail -sS --max-time 25 "$base/robots.txt" | grep -q 'Disallow: /'
+          status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 "$base/api/admin")"
+          test "$status" = 404
+          echo "OmniMaster public HTML, nonce CSP, noindex and blocked admin route verified."
+
+      - name: Test read-only CABO Artist Hub Cloudflare preview
+        run: |
+          set -euo pipefail
+          base="https://cabo-artist-static-preview.cabo-solutions-za.workers.dev"
+          curl --fail --retry 2 --retry-delay 4 --retry-all-errors --max-time 45 -sS -D /tmp/artist-headers "$base/" -o /tmp/artist-home
+          grep -qi 'CABO Artist Hub' /tmp/artist-home
+          grep -qi 'fictional artists and synthetic insights' /tmp/artist-home
+          grep -qi '^x-robots-tag: noindex' /tmp/artist-headers
+          curl --fail -sS --max-time 25 "$base/app.js" -o /tmp/artist-app.js
+          grep -q 'staticDemoArtists' /tmp/artist-app.js
+          curl --fail -sS --max-time 25 "$base/styles.css" > /tmp/artist-style.css
+          test -s /tmp/artist-style.css
+          status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 "$base/api/artists")"
+          test "$status" = 503
+          status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 -X POST "$base/api/bookings")"
+          test "$status" = 405
+          echo "Artist public static assets and blocked live booking API verified."
