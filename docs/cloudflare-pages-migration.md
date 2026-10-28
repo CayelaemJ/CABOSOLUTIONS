@@ -66,3 +66,36 @@ Git-integrated project later.
 
 This stage is meant to remove cold starts for **website assets**, not falsely
 claim that the backend is already Cloudflare-native.
+
+## Cloudflare edge preview deployed — October 28, 2026
+
+Cloudflare Worker script: `cabo-solutions-edge-preview`
+Cloudflare account Workers subdomain: `cabo-solutions-za.workers.dev`
+Expected preview URL:
+`https://cabo-solutions-edge-preview.cabo-solutions-za.workers.dev/`
+
+Cloudflare API confirmed a successful Worker upload, deployment at 100%,
+and the `workers.dev` route enabled. The Worker implementation is tracked in
+`cloudflare/edge-preview.js` with the synthetic regression tests in
+`tests/cloudflare-edge-preview.test.mjs`.
+
+**Independent browser/HTTP smoke testing has not yet succeeded.**
+The external URL checker could not access this new workers.dev host, so
+do not claim live functional validation of the page or enquiry form.
+
+Architecture of this isolated, temporary preview:
+- Cloudflare Worker serves an edge-cached version of public site content
+  from the existing Render origin (5-minute HTML, 1-day static asset cache).
+- Anonymous `GET /` and static assets are allowlisted.
+- Only `POST /api/enquiries` and `GET /api/health` are forwarded uncached.
+- `/zoho-setup`, `/api/admin/*`, cookies and incoming credentials are not
+  available through the preview; admin functions remain on Render.
+- This is **not** a fully static Pages deployment and does **not**
+  eliminate all Render cold starts. Uncached visits to a new Cloudflare
+  location or enquiry requests can still wake Render.
+
+Release caution: this Worker is public but isolated to `workers.dev`.
+No application domains or DNS were switched. Treat it as a temporary
+compatibility trial; once the Cloudflare Git integration is authorized,
+deploy the actual Vite-built `dist` assets onto Pages and migrate
+the enquiry backend in a separate, data-preserving step.
