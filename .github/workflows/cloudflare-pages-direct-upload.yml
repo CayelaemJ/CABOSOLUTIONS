@@ -86,8 +86,11 @@ jobs:
       - name: Generate public-only gzip asset bundle
         run: |
           node scripts/cloudflare/make-edge-asset-bundle.mjs
-          test -s cloudflare-output/site-assets.json
-          cp cloudflare-output/site-assets.json /tmp/cabo-site-assets.json
+          node scripts/cloudflare/build-site-worker.mjs
+          node --check cloudflare-output/cabo-site.worker.js
+          node --test tests/cloudflare-built-worker.test.mjs
+          test -s cloudflare-output/cabo-site.worker.js
+          cp cloudflare-output/cabo-site.worker.js /tmp/cabo-site.worker.js
       - name: Publish browser assets to isolated GitHub artifact branch
         run: |
           set -euo pipefail
@@ -96,8 +99,8 @@ jobs:
           git fetch origin refs/heads/cf-cabo-build-artifacts:refs/remotes/origin/cf-cabo-build-artifacts --depth=1
           git checkout -B cf-cabo-build-artifacts refs/remotes/origin/cf-cabo-build-artifacts
           mkdir -p generated
-          cp /tmp/cabo-site-assets.json generated/cabo-site-assets.json
-          git add generated/cabo-site-assets.json
+          cp /tmp/cabo-site.worker.js generated/cabo-site.worker.js
+          git add generated/cabo-site.worker.js
           if git diff --cached --quiet; then
             echo 'No change to browser assets'
           else
