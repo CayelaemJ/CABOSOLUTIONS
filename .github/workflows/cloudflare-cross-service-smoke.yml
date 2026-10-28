@@ -32,7 +32,8 @@ jobs:
           grep -qi 'CABO Artist Hub' /tmp/artist-home
           grep -qi 'fictional artists and synthetic insights' /tmp/artist-home
           grep -qi '^x-robots-tag: noindex' /tmp/artist-headers
-          curl --fail -sS --max-time 25 "$base/app.js" | grep -q 'staticDemoArtists'
+          curl --fail -sS --max-time 25 "$base/app.js" -o /tmp/artist-app.js
+          grep -q 'staticDemoArtists' /tmp/artist-app.js
           curl --fail -sS --max-time 25 "$base/styles.css" > /tmp/artist-style.css
           test -s /tmp/artist-style.css
           status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 "$base/api/artists")"
