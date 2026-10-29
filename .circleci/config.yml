@@ -43,6 +43,34 @@ jobs:
           command: docker run --rm ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t "$SECURITY_ZAP_TARGET_URL" -m 1 -I
           no_output_timeout: 15m
 
+  cloudflare_full_site_candidate:
+    docker:
+      - image: cimg/node:24.22
+    resource_class: small
+    steps:
+      - checkout
+      - run:
+          name: Validate original CABO website plus enquiry and admin API safety
+          command: |
+            set -euo pipefail
+            node --test tests/cloudflare-full-site.test.mjs
+            node --check server.mjs
+            node --check cloudflare/full-site/worker.mjs
+            node --check cloudflare/full-site/gate.mjs
+      - run:
+          name: Compile the actual company website and bundle Cloudflare backend
+          command: |
+            set -euo pipefail
+            npm ci --no-audit --no-fund
+            npm run build
+            test -s dist/index.html
+            npm ci --prefix cloudflare/full-site --no-audit --no-fund
+            cloudflare/full-site/node_modules/.bin/wrangler deploy --dry-run --containers-rollout=none --config wrangler.cabo-full-site.jsonc --outdir cloudflare-output/full-site
+            test -s cloudflare-output/full-site/worker.js
+      - store_artifacts:
+          path: cloudflare-output/full-site
+          destination: cabo-solutions-full-site-api-candidate
+
 workflows:
   security_audit:
     jobs:
@@ -51,3 +79,9 @@ workflows:
             branches:
               only: main
       - security_suite
+  cloudflare_complete_site_migration:
+    jobs:
+      - cloudflare_full_site_candidate:
+          filters:
+            branches:
+              only: feat/cloudflare-full-site-api-20261029
