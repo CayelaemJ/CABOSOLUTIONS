@@ -1,0 +1,17 @@
+{
+  "$schema":"node_modules/wrangler/config-schema.json",
+  "name":"cabo-solutions-full-site",
+  "main":"cloudflare/full-site/worker.mjs",
+  "compatibility_date":"2026-10-29",
+  "compatibility_flags":["nodejs_compat"],
+  "workers_dev":false,
+  "vars":{
+    "CABO_SITE_BACKEND_ENABLED":"false",
+    "CABO_SITE_CANONICAL_HOST":"",
+    "CABO_SITE_RATE_LIMIT_TESTED":"false",
+    "CABO_SITE_NOTIFICATION_TESTED":"false"
+  },
+  "containers":[{"class_name":"CaboSiteContainer","image":"./Dockerfile.cloudflare","max_instances":1}],
+  "durable_objects":{"bindings":[{"name":"CABO_SITE","class_name":"CaboSiteContainer"}]},
+  "migrations":[{"tag":"cabo-site-v1","new_sqlite_classes":["CaboSiteContainer"]}]
+}
