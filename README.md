@@ -1,3 +1,7 @@
+> 📐 **[Explore the project architecture, diagrams and technical deep dive](docs/PORTFOLIO_SHOWCASE.md)** · [Engineering profile](https://github.com/CayelaemJ)
+
+---
+
 # CABO Solutions website
 
 React/Vite company website with Three.js visuals, responsive service and portfolio showcases, and a production Node.js enquiry API.
