@@ -17,7 +17,7 @@ const json = (res,status,payload) => { res.writeHead(status,{'Content-Type':'app
 const readJson = req => readBoundedJson(req);
 const schema = `CREATE TABLE IF NOT EXISTS cabo_enquiries (id BIGSERIAL PRIMARY KEY, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), name TEXT NOT NULL, email TEXT NOT NULL, organisation TEXT, service TEXT NOT NULL, message TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'new', updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;
 let ready = null;
-async function db() { if (!pool) throw new Error('DATABASE_URL is not configured'); if (!ready) ready=pool.query(schema).catch(e=>{ready=null;throw e}); await ready; return pool; }
+async function db() { if (!pool) throw new Error('DATABASE_URL is not configured'); if (!ready) ready=pool.query(process.env.CABO_DISABLE_RUNTIME_DDL === 'true' ? "SELECT to_regclass('public.cabo_enquiries') AS table_name" : schema).then(r => { if (process.env.CABO_DISABLE_RUNTIME_DDL === 'true' && !r.rows[0]?.table_name) throw new Error('CABO enquiry schema missing'); }).catch(e=>{ready=null;throw e}); await ready; return pool; }
 let zohoToken = null;
 let zohoTokenExpires = 0;
 async function zohoRequest(url, options = {}) {
