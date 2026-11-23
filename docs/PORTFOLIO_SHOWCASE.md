@@ -1,3 +1,5 @@
+> **Portfolio evidence update — 23 November 2026:** CABO Solutions is presently an unregistered, independently developed, non-revenue-generating initiative. Its principal education project has [a 25-section engineering architecture](https://github.com/CayelaemJ/Training-and-Development-Hub/blob/main/docs/ARCHITECTURE.md) covering React/PWA, Android/Kotlin, iOS/Swift, Windows/WinUI 3, Express/PostgreSQL, retrieval/AI, privacy, testing and release requirements. These are engineering deliverables and prototype capabilities, not proof of commercial operations, institutional pilots or national accreditation.
+
 # CABO Solutions — Company Website & Enquiry Platform
 
 > **Status:** Product website codebase; verify live deployment separately  
