@@ -1,3 +1,5 @@
+> **23 November 2026 source and presentation note:** CABO Solutions is currently an **independent, unregistered, non-revenue-generating product-development initiative**. This website showcases concept services and work in progress; it is not evidence of a registered company, contracted clients or a verified live deployment. The connected [CABO Learning Hub](https://github.com/CayelaemJ/Training-and-Development-Hub) is a substantial multi-client education prototype; read its [source-evidenced architecture](https://github.com/CayelaemJ/Training-and-Development-Hub/blob/main/docs/ARCHITECTURE.md) and [release gates](https://github.com/CayelaemJ/Training-and-Development-Hub/blob/main/docs/engineering/RELEASE_READINESS.md) before external claims.
+
 > 📐 **[Explore the project architecture, diagrams and technical deep dive](docs/PORTFOLIO_SHOWCASE.md)** · [Engineering profile](https://github.com/CayelaemJ)
 
 ---
